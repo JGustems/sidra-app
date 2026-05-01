@@ -3,15 +3,20 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import type { Poma } from '@/lib/types'
+import type { Poma, TritaradaOrigen } from '@/lib/types'
 
 interface Props {
-  data: { jornada: { id: number; data: string }; pomes: Poma[] }
+  data: {
+    jornada: { id: number; data: string }
+    pomes: Poma[]
+    triturades: { triturada_origen: TritaradaOrigen[] }[]
+  }
   compact?: boolean
 }
 
-function PomaCard({ poma, onDelete, onSave, compact }: {
+function PomaCard({ poma, pesUsat, onDelete, onSave, compact }: {
   poma: Partial<Poma> & { _local?: boolean }
+  pesUsat: number
   onDelete: () => void
   onSave: (p: Partial<Poma>) => void
   compact?: boolean
@@ -31,13 +36,16 @@ function PomaCard({ poma, onDelete, onSave, compact }: {
     setEditing(false)
   }
 
+  const pesDiff = form.pes_total_kg ? Math.abs(pesUsat - form.pes_total_kg) : null
+  const balancOk = pesDiff !== null && pesDiff < 0.5
+
   if (compact) return (
     <div className="bg-white border border-stone-200 rounded-lg p-3 mb-2">
       <div className="text-xs font-mono font-medium text-stone-700 mb-2">{form.codi}</div>
       {[
         { label: 'Varietat', value: form.varietat },
-        { label: 'Pes usat', value: form.pes_usat_kg ? `${form.pes_usat_kg} kg` : null },
-        { label: 'Origen', value: form.origen },
+        { label: 'Pes total', value: form.pes_total_kg ? `${form.pes_total_kg} kg` : null },
+        { label: 'Pes usat', value: pesUsat > 0 ? `${pesUsat} kg` : null },
       ].map(f => (
         <div key={f.label} className="flex justify-between text-xs mb-1">
           <span className="text-stone-400">{f.label}</span>
@@ -53,22 +61,35 @@ function PomaCard({ poma, onDelete, onSave, compact }: {
         <span className="font-mono text-sm font-medium bg-stone-100 px-2 py-0.5 rounded">{form.codi}</span>
         <span className="text-xs font-mono text-[#0F6E56] bg-[#E1F5EE] px-2 py-0.5 rounded-full">desat</span>
       </div>
-      <div className="grid grid-cols-2">
+      <div>
         {[
           { label: 'Varietat', value: form.varietat },
           { label: 'Origen', value: form.origen },
           { label: 'Maduració', value: form.maduracio },
           { label: 'Càmera (mesos)', value: form.camera_mesos },
           { label: 'Pes total (kg)', value: form.pes_total_kg },
-          { label: 'Pes usat (kg)', value: form.pes_usat_kg },
         ].map((f, i) => (
-          <div key={f.label} className={`px-4 py-2.5 ${i < 4 ? 'border-b border-stone-100' : ''} ${i % 2 === 0 ? 'border-r border-stone-100' : ''}`}>
+          <div key={f.label} className={`px-4 py-2.5 border-b border-stone-100`}>
             <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{f.label}</div>
             <div className={`text-sm font-mono font-medium ${f.value ? 'text-stone-800' : 'text-stone-300 italic'}`}>
               {f.value ?? '—'}
             </div>
           </div>
         ))}
+        <div className="px-4 py-2.5 border-b border-stone-100">
+          <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">Pes usat (kg)</div>
+          <div className="text-sm font-mono font-medium text-stone-800">
+            {pesUsat > 0 ? `${pesUsat} kg` : <span className="text-stone-300 italic">—</span>}
+          </div>
+          <div className="text-xs text-stone-400 mt-0.5">calculat de les triturades</div>
+        </div>
+        {pesUsat > 0 && form.pes_total_kg && (
+          <div className={`mx-4 my-2 px-3 py-1.5 rounded text-xs font-mono ${balancOk ? 'bg-[#E1F5EE] text-[#0F6E56]' : 'bg-[#FAEEDA] text-[#854F0B]'}`}>
+            {balancOk
+              ? `Balanç correcte: ${pesUsat} kg usats de ${form.pes_total_kg} kg ✓`
+              : `Diferència: ${pesUsat} kg usats vs ${form.pes_total_kg} kg totals`}
+          </div>
+        )}
       </div>
       <div className="flex justify-end px-4 py-2 border-t border-stone-100">
         <button onClick={() => setEditing(true)} className="text-xs font-mono text-stone-400 border border-stone-200 px-3 py-1 rounded hover:bg-stone-50 transition-colors">
@@ -84,15 +105,14 @@ function PomaCard({ poma, onDelete, onSave, compact }: {
         <span className="font-mono text-sm font-medium bg-stone-100 px-2 py-0.5 rounded">{form.codi}</span>
         <span className="text-xs font-mono text-[#854F0B] bg-[#FAEEDA] px-2 py-0.5 rounded-full">editant</span>
       </div>
-      <div className="grid grid-cols-2">
+      <div>
         {[
           { label: 'Varietat', field: 'varietat', type: 'text' },
           { label: 'Origen', field: 'origen', type: 'text' },
           { label: 'Càmera (mesos)', field: 'camera_mesos', type: 'number' },
           { label: 'Pes total (kg)', field: 'pes_total_kg', type: 'number' },
-          { label: 'Pes usat (kg)', field: 'pes_usat_kg', type: 'number' },
-        ].map((f, i) => (
-          <div key={f.field} className={`px-4 py-2.5 ${i < 3 ? 'border-b border-stone-100' : ''} ${i % 2 === 0 ? 'border-r border-stone-100' : ''}`}>
+        ].map((f) => (
+          <div key={f.field} className="px-4 py-2.5 border-b border-stone-100">
             <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">{f.label}</div>
             <input
               type={f.type}
@@ -110,8 +130,14 @@ function PomaCard({ poma, onDelete, onSave, compact }: {
             className="w-full font-mono text-sm bg-transparent border-b border-stone-200 focus:border-[#BA7517] outline-none py-0.5 text-stone-800"
           >
             <option value="">—</option>
-            {['Verd','Punt','Passat'].map(m => <option key={m} value={m}>{m}</option>)}
+            {['Verd', 'Punt', 'Passat'].map(m => <option key={m} value={m}>{m}</option>)}
           </select>
+        </div>
+        <div className="px-4 py-2.5">
+          <div className="text-xs text-stone-400 uppercase tracking-wide mb-1">Pes usat (kg)</div>
+          <div className="text-sm font-mono text-stone-400 italic">
+            {pesUsat > 0 ? `${pesUsat} kg — calculat automàticament` : 'Es calcularà de les triturades'}
+          </div>
         </div>
       </div>
       <div className="flex justify-end gap-2 px-4 py-2 border-t border-stone-100">
@@ -133,6 +159,15 @@ export default function FasePomes({ data, compact }: Props) {
   const router = useRouter()
   const [pomes, setPomes] = useState<(Partial<Poma> & { _local?: boolean })[]>(data.pomes)
 
+  function getPesUsat(pomaId: number | undefined) {
+    if (!pomaId) return 0
+    return data.triturades.reduce((sum, t) => {
+      return sum + t.triturada_origen
+        .filter(o => o.poma_id === pomaId)
+        .reduce((s, o) => s + (o.pes_kg || 0), 0)
+    }, 0)
+  }
+
   function addPoma() {
     setPomes(p => [...p, { codi: `Pom${p.length + 1}`, jornada_id: data.jornada.id, _local: true }])
   }
@@ -143,13 +178,12 @@ export default function FasePomes({ data, compact }: Props) {
       await supabase.from('poma').update({
         varietat: form.varietat, origen: form.origen, maduracio: form.maduracio,
         camera_mesos: form.camera_mesos, pes_total_kg: form.pes_total_kg,
-        pes_usat_kg: form.pes_usat_kg, notes: form.notes,
       }).eq('id', poma.id)
     } else {
       const { data: nova } = await supabase.from('poma').insert({
         jornada_id: data.jornada.id, codi: form.codi!, varietat: form.varietat ?? '',
         origen: form.origen, maduracio: form.maduracio, camera_mesos: form.camera_mesos,
-        pes_total_kg: form.pes_total_kg, pes_usat_kg: form.pes_usat_kg,
+        pes_total_kg: form.pes_total_kg,
       }).select().single()
       if (nova) setPomes(p => p.map((item, i) => i === idx ? { ...nova } : item))
     }
@@ -166,7 +200,8 @@ export default function FasePomes({ data, compact }: Props) {
     <div>
       {pomes.map((poma, idx) => (
         <PomaCard key={poma.id ?? `local-${idx}`} poma={poma} compact
-          onDelete={() => deletePoma(idx)} onSave={(f) => savePoma(idx, f)} />
+          pesUsat={getPesUsat(poma.id)}
+          onDelete={() => deletePoma(idx)} onSave={f => savePoma(idx, f)} />
       ))}
     </div>
   )
@@ -184,7 +219,8 @@ export default function FasePomes({ data, compact }: Props) {
       )}
       {pomes.map((poma, idx) => (
         <PomaCard key={poma.id ?? `local-${idx}`} poma={poma}
-          onDelete={() => deletePoma(idx)} onSave={(f) => savePoma(idx, f)} />
+          pesUsat={getPesUsat(poma.id)}
+          onDelete={() => deletePoma(idx)} onSave={f => savePoma(idx, f)} />
       ))}
     </div>
   )
