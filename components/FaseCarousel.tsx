@@ -113,8 +113,8 @@ export default function FaseCarousel({ data }: { data: unknown }) {
 
             return (
               <div
-                key={fase.id}
-                style={{ opacity, transition: 'opacity 0.3s', minWidth: 0 }}
+  key={fase.id}
+  style={{ opacity, transition: 'opacity 0.3s', minWidth: 0, maxWidth: isActive ? '480px' : undefined }}
                 onClick={isCompact ? () => setCurrent(idx) : undefined}
                 className={isCompact ? 'cursor-pointer' : ''}
               >
