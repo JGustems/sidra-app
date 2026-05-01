@@ -1,13 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import FaseNav from '@/components/FaseNav'
-import FasePomes from '@/components/fases/FasePomes'
-import FaseTriturat from '@/components/fases/FaseTriturat'
-import FasePremsat from '@/components/fases/FasePremsat'
-import FaseBullit from '@/components/fases/FaseBullit'
-import FaseFermentat from '@/components/fases/FaseFermentat'
-import FaseEmbotellat from '@/components/fases/FaseEmbotellat'
+import FaseCarousel from '@/components/FaseCarousel'
 import type { Jornada } from '@/lib/types'
 
 export const revalidate = 0
@@ -19,10 +13,8 @@ function formatData(iso: string) {
 
 export default async function JornadaPage({
   params,
-  searchParams,
 }: {
   params: { id: string }
-  searchParams: { fase?: string }
 }) {
   const { data, error } = await supabase
     .from('jornada')
@@ -33,7 +25,6 @@ export default async function JornadaPage({
   if (error || !data) notFound()
 
   const jornada = data as Jornada
-  const fase = searchParams.fase ?? 'pomes'
 
   const [
     { data: pomes },
@@ -64,21 +55,18 @@ export default async function JornadaPage({
   return (
     <div>
       <div className="flex items-baseline gap-4 mb-6">
-        <Link href="/" className="text-xs text-stone-400 font-mono hover:text-stone-600">← Jornades</Link>
-        <h2 className="font-serif italic text-2xl text-stone-800">{formatData(jornada.data)}</h2>
-        {jornada.notes && <span className="text-xs text-stone-400">{jornada.notes}</span>}
+        <Link href="/" className="text-xs text-stone-400 font-mono hover:text-stone-600">
+          ← Jornades
+        </Link>
+        <h2 className="font-serif italic text-2xl text-stone-800">
+          {formatData(jornada.data)}
+        </h2>
+        {jornada.notes && (
+          <span className="text-xs text-stone-400">{jornada.notes}</span>
+        )}
       </div>
 
-      <FaseNav jornadaId={jornada.id} faseActual={fase} />
-
-      <div className="mt-6">
-        {fase === 'pomes'      && <FasePomes      data={jornadaData} />}
-        {fase === 'triturat'   && <FaseTriturat   data={jornadaData} />}
-        {fase === 'premsat'    && <FasePremsat    data={jornadaData} />}
-        {fase === 'bullit'     && <FaseBullit     data={jornadaData} />}
-        {fase === 'fermentat'  && <FaseFermentat  data={jornadaData} />}
-        {fase === 'embotellat' && <FaseEmbotellat data={jornadaData} />}
-      </div>
+      <FaseCarousel data={jornadaData} />
     </div>
   )
 }
