@@ -4,25 +4,118 @@
 @tailwind components;
 @tailwind utilities;
 
+* { box-sizing: border-box; }
+
 :root {
-  --amber: #BA7517;
-  --amber-light: #2a1800;
-  --amber-mid: #EF9F27;
-  --teal: #1D9E75;
-  --teal-light: #0a2318;
-  --teal-mid: #0F6E56;
+  --bg:       #141412;
+  --bg2:      #1a1917;
+  --bg3:      #1e1d1b;
+  --border:   #252422;
+  --border2:  #2e2c2a;
+  --text:     #c8c4be;
+  --text2:    #7a7672;
+  --text3:    #4a4846;
+  --amber:    #BA7517;
+  --amber-bg: #2a1800;
+  --amber-hi: #EF9F27;
+  --teal:     #1D9E75;
+  --teal-bg:  #0a2318;
 }
 
 body {
   font-family: 'DM Mono', monospace;
-  background: #141412;
-  color: #c8c4be;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
 }
 
 input, select, textarea {
   font-family: 'DM Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
 }
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: #1a1917; }
-::-webkit-scrollbar-thumb { background: #3a3835; border-radius: 2px; }
+input::placeholder, textarea::placeholder { color: var(--text3); }
+
+/* Cards fosques */
+.card-dark {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.card-dark.editing { border-color: var(--amber); }
+
+/* Field row */
+.field-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 0.5px solid var(--border);
+}
+.field-row:last-child { border-bottom: none; }
+.field-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+  width: 100px;
+  flex-shrink: 0;
+}
+.field-value {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+}
+.field-value.empty {
+  color: var(--text3);
+  font-style: italic;
+  font-weight: 400;
+}
+.field-input {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border2);
+  color: var(--text);
+  outline: none;
+  flex: 1;
+  padding: 1px 4px;
+}
+.field-input:focus { border-bottom-color: var(--amber); }
+.field-select {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: var(--bg);
+  border: none;
+  border-bottom: 1px solid var(--border2);
+  color: var(--text);
+  outline: none;
+  flex: 1;
+  padding: 1px 4px;
+}
+
+/* Badges */
+.badge-saved   { font-size: 9px; background: var(--teal-bg); color: var(--teal); padding: 2px 8px; border-radius: 10px; }
+.badge-editing { font-size: 9px; background: var(--amber-bg); color: var(--amber-hi); padding: 2px 8px; border-radius: 10px; }
+
+/* Buttons */
+.btn-primary { font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 14px; border-radius: 5px; border: none; background: var(--amber); color: #fff; cursor: pointer; }
+.btn-primary:hover { background: #9A6010; }
+.btn-primary:disabled { opacity: 0.4; cursor: default; }
+.btn-secondary { font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 10px; border-radius: 5px; border: 0.5px solid var(--border2); background: none; color: var(--text2); cursor: pointer; }
+.btn-secondary:hover { background: var(--bg3); }
+.btn-danger { font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 8px; border: none; background: none; color: var(--text3); cursor: pointer; }
+.btn-danger:hover { color: #E24B4A; }
+.btn-add { font-family: 'DM Mono', monospace; font-size: 10px; width: 100%; padding: 7px; border-radius: 7px; border: 0.5px dashed var(--border2); background: none; color: var(--text3); cursor: pointer; text-align: center; }
+.btn-add:hover { border-color: var(--amber); color: var(--amber); }
+
+/* Balance */
+.balance-ok   { font-size: 10px; padding: 5px 10px; border-radius: 5px; background: var(--teal-bg); color: var(--teal); }
+.balance-warn { font-size: 10px; padding: 5px 10px; border-radius: 5px; background: var(--amber-bg); color: var(--amber-hi); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
