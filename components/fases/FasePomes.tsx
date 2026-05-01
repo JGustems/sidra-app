@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link' // Importat per al botó final
 import { supabase } from '@/lib/supabase'
 import type { Poma } from '@/lib/types'
 
@@ -190,12 +191,12 @@ export default function FasePomes({ data }: Props) {
       ))}
 
       <div className="flex justify-end pt-2">
-        
+        <Link
           href={`/jornada/${data.jornada.id}?fase=triturat`}
           className="font-mono text-xs px-4 py-2 bg-[#BA7517] text-white rounded hover:bg-[#9A6010] transition-colors"
         >
           Següent: Triturat →
-        </a>
+        </Link>
       </div>
     </div>
   )
