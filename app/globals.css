@@ -6,19 +6,23 @@
 
 :root {
   --amber: #BA7517;
-  --amber-light: #FAEEDA;
+  --amber-light: #2a1800;
   --amber-mid: #EF9F27;
-  --teal: #0F6E56;
-  --teal-light: #E1F5EE;
-  --teal-mid: #1D9E75;
+  --teal: #1D9E75;
+  --teal-light: #0a2318;
+  --teal-mid: #0F6E56;
 }
 
 body {
   font-family: 'DM Mono', monospace;
-  background: #f8f7f4;
-  color: #1a1a1a;
+  background: #141412;
+  color: #c8c4be;
 }
 
 input, select, textarea {
   font-family: 'DM Mono', monospace;
 }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #1a1917; }
+::-webkit-scrollbar-thumb { background: #3a3835; border-radius: 2px; }
