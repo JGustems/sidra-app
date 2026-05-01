@@ -13,16 +13,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ca">
-      <body className="min-h-screen bg-[#f8f7f4]">
-        <header className="border-b border-stone-200 bg-white px-6 py-3 flex items-baseline gap-4">
-          <h1 className="font-serif italic text-xl text-stone-800">Sidra</h1>
-          <span className="text-xs text-stone-400 font-mono">producció</span>
-          <nav className="ml-auto flex gap-6 text-xs font-mono text-stone-500">
-            <a href="/" className="hover:text-stone-800 transition-colors">Jornades</a>
-            <a href="/configuracio" className="hover:text-stone-800 transition-colors">Configuració</a>
+      <body className="min-h-screen" style={{ background: '#141412' }}>
+        <header style={{ background: '#0e0d0c', borderBottom: '0.5px solid #252422' }} className="px-6 py-3 flex items-baseline gap-4">
+          <a href="/" style={{ color: '#e8e4de' }} className="font-serif italic text-xl hover:opacity-80 transition-opacity">Sidra</a>
+          <span style={{ color: '#5a5854' }} className="text-xs font-mono">producció</span>
+          <nav className="ml-auto flex gap-6 text-xs font-mono">
+            <a href="/" style={{ color: '#5a5854' }} className="hover:text-[#c8c4be] transition-colors">Jornades</a>
+            <a href="/configuracio" style={{ color: '#5a5854' }} className="hover:text-[#c8c4be] transition-colors">Configuració</a>
           </nav>
         </header>
-        <main className="max-w-4xl mx-auto px-6 py-8">
+        <main className="max-w-5xl mx-auto px-6 py-8">
           {children}
         </main>
       </body>
