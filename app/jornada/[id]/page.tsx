@@ -31,6 +31,7 @@ export default async function JornadaPage({
 
   if (error || !jornada) notFound()
 
+  const j = jornada as NonNullable<typeof jornada>
   const fase = searchParams.fase ?? 'pomes'
 
   const [
@@ -41,16 +42,16 @@ export default async function JornadaPage({
     { data: sucsDirectes },
     { data: fermentadors },
   ] = await Promise.all([
-    supabase.from('poma').select('*').eq('jornada_id', jornada.id).order('codi'),
-    supabase.from('triturada').select('*, triturada_origen(*)').eq('jornada_id', jornada.id).order('codi'),
-    supabase.from('premsa').select('*, premsa_origen(*)').eq('jornada_id', jornada.id).order('codi'),
-    supabase.from('ebullidor').select('*, ebullidor_origen(*)').eq('jornada_id', jornada.id).order('codi'),
-    supabase.from('suc_directe').select('*, suc_directe_origen(*)').eq('jornada_id', jornada.id).order('codi'),
-    supabase.from('fermentador').select('*, fermentador_origen(*)').eq('jornada_id', jornada.id).order('lot'),
+    supabase.from('poma').select('*').eq('jornada_id', j.id).order('codi'),
+    supabase.from('triturada').select('*, triturada_origen(*)').eq('jornada_id', j.id).order('codi'),
+    supabase.from('premsa').select('*, premsa_origen(*)').eq('jornada_id', j.id).order('codi'),
+    supabase.from('ebullidor').select('*, ebullidor_origen(*)').eq('jornada_id', j.id).order('codi'),
+    supabase.from('suc_directe').select('*, suc_directe_origen(*)').eq('jornada_id', j.id).order('codi'),
+    supabase.from('fermentador').select('*, fermentador_origen(*)').eq('jornada_id', j.id).order('lot'),
   ])
 
   const jornadaData = {
-    jornada,
+    jornada: j,
     pomes: pomes ?? [],
     triturades: triturades ?? [],
     premses: premses ?? [],
@@ -63,8 +64,8 @@ export default async function JornadaPage({
     <div>
       <div className="flex items-baseline gap-4 mb-6">
         <Link href="/" className="text-xs text-stone-400 font-mono hover:text-stone-600">← Jornades</Link>
-        <h2 className="font-serif italic text-2xl text-stone-800">{formatData(jornada.data)}</h2>
-        {jornada.notes && <span className="text-xs text-stone-400">{jornada.notes}</span>}
+        <h2 className="font-serif italic text-2xl text-stone-800">{formatData(j.data)}</h2>
+        {j.notes && <span className="text-xs text-stone-400">{j.notes}</span>}
       </div>
 
       <FaseNav jornadaId={jornada.id} faseActual={fase} />
