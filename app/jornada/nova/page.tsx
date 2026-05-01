@@ -16,7 +16,8 @@ export default function NovaJornadaPage() {
     setLoading(true)
     setError(null)
 
-    const { data: nova, error: err } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: nova, error: err } = await (supabase as any)
       .from('jornada')
       .insert({ data, notes: notes || null })
       .select()
