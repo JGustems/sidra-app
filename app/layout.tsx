@@ -13,30 +13,37 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ca">
-      <body className="min-h-screen" style={{ background: '#141412' }}>
+      <body style={{ background: '#141412', minHeight: '100vh', margin: 0 }}>
         <header style={{
           background: '#0e0d0c',
           borderBottom: '0.5px solid #252422',
-        }} className="px-6 py-3 flex items-center gap-4">
-          <a href="/" className="font-serif italic text-xl hover:opacity-80 transition-opacity"
-            style={{ color: '#e8e4de' }}>
+          padding: '10px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+        }}>
+          <a href="/" style={{
+            fontFamily: 'Georgia, serif',
+            fontStyle: 'italic',
+            fontSize: '18px',
+            color: '#e8e4de',
+            textDecoration: 'none',
+          }}>
             Sidra
           </a>
-          <span className="text-xs font-mono" style={{ color: '#4a4846' }}>producció</span>
-          <nav className="ml-auto flex gap-6 text-xs font-mono">
-            <a href="/" className="transition-colors" style={{ color: '#5a5854' }}
-              onMouseOver={e => (e.currentTarget.style.color = '#c8c4be')}
-              onMouseOut={e => (e.currentTarget.style.color = '#5a5854')}>
+          <span style={{ fontSize: '11px', color: '#4a4846', fontFamily: 'DM Mono, monospace' }}>
+            producció
+          </span>
+          <nav style={{ marginLeft: 'auto', display: 'flex', gap: '20px' }}>
+            <a href="/" style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
               Jornades
             </a>
-            <a href="/configuracio" className="transition-colors" style={{ color: '#5a5854' }}
-              onMouseOver={e => (e.currentTarget.style.color = '#c8c4be')}
-              onMouseOut={e => (e.currentTarget.style.color = '#5a5854')}>
+            <a href="/configuracio" style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
               Configuració
             </a>
           </nav>
         </header>
-        <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px 24px' }}>
+        <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
           {children}
         </main>
       </body>
