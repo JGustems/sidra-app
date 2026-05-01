@@ -49,12 +49,16 @@ function ColHeader({ label, state }: { label: string; state: 'prev2' | 'prev1' |
 export default function FaseCarousel({ data }: { data: unknown }) {
   const [current, setCurrent] = useState(0)
 
-  const cols: { idx: number; state: 'prev2' | 'prev1' | 'active' | 'next1' | 'next2' }[] = []
-  if (current - 2 >= 0) cols.push({ idx: current - 2, state: 'prev2' })
-  if (current - 1 >= 0) cols.push({ idx: current - 1, state: 'prev1' })
-  cols.push({ idx: current, state: 'active' })
-  if (current + 1 < FASES.length) cols.push({ idx: current + 1, state: 'next1' })
-  if (current + 2 < FASES.length) cols.push({ idx: current + 2, state: 'next2' })
+  const cols: { idx: number; state: 'prev2' | 'prev1' | 'active' | 'next1' | 'next2'; empty?: boolean }[] = []
+if (current - 2 >= 0) cols.push({ idx: current - 2, state: 'prev2' })
+else cols.push({ idx: -2, state: 'prev2', empty: true })
+if (current - 1 >= 0) cols.push({ idx: current - 1, state: 'prev1' })
+else cols.push({ idx: -1, state: 'prev1', empty: true })
+cols.push({ idx: current, state: 'active' })
+if (current + 1 < FASES.length) cols.push({ idx: current + 1, state: 'next1' })
+else cols.push({ idx: -3, state: 'next1', empty: true })
+if (current + 2 < FASES.length) cols.push({ idx: current + 2, state: 'next2' })
+else cols.push({ idx: -4, state: 'next2', empty: true })
 
   const widths = {
     prev2:  '120px',
@@ -105,26 +109,33 @@ export default function FaseCarousel({ data }: { data: unknown }) {
           transition: 'grid-template-columns 0.3s ease',
           minWidth: 0,
         }}>
-          {cols.map(({ idx, state }) => {
-            const fase = FASES[idx]
-            const isActive = state === 'active'
-            const isCompact = !isActive
-            const opacity = state === 'prev2' ? 0.35 : state === 'next2' ? 0.3 : state === 'next1' ? 0.45 : state === 'prev1' ? 0.65 : 1
+          {cols.map(({ idx, state, empty }) => {
+  const fase = !empty ? FASES[idx] : null
+  const isActive = state === 'active'
+  const isCompact = !isActive
+  const opacity = state === 'prev2' ? 0.35 : state === 'next2' ? 0.3 : state === 'next1' ? 0.45 : state === 'prev1' ? 0.65 : 1
 
-            return (
-              <div
-  key={fase.id}
-  style={{ opacity, transition: 'opacity 0.3s', minWidth: 0, maxWidth: isActive ? '480px' : undefined }}
-                onClick={isCompact ? () => setCurrent(idx) : undefined}
-                className={isCompact ? 'cursor-pointer' : ''}
-              >
-                <ColHeader label={fase.label} state={state} />
-                <div style={{ overflow: isCompact ? 'hidden' : 'visible' }}>
-                  <FaseContent faseId={fase.id} data={data} compact={isCompact} />
-                </div>
-              </div>
-            )
-          })}
+  return (
+    <div
+      key={`col-${idx}`}
+      style={{
+        opacity: empty ? 0 : opacity,
+        transition: 'opacity 0.3s',
+        minWidth: 0,
+        maxWidth: isActive ? '480px' : undefined,
+      }}
+      onClick={isCompact && !empty && fase ? () => setCurrent(idx) : undefined}
+      className={isCompact && !empty ? 'cursor-pointer' : ''}
+    >
+      {!empty && fase && <ColHeader label={fase.label} state={state} />}
+      {!empty && fase && (
+        <div style={{ overflow: isCompact ? 'hidden' : 'visible' }}>
+          <FaseContent faseId={fase.id} data={data} compact={isCompact} />
+        </div>
+      )}
+    </div>
+  )
+})}
         </div>
       </div>
 
