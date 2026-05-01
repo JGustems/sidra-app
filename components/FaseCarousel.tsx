@@ -19,8 +19,8 @@ const FASES = [
 
 function FaseContent({ faseId, data, compact }: { faseId: string; data: unknown; compact?: boolean }) {
   const d = data as Record<string, unknown>
-  if (faseId === 'pomes')      return <FasePomes      data={d as Parameters<typeof FasePomes>[0]['data']}      compact={compact} />
-  if (faseId === 'triturat')   return <FaseTriturat   data={d as Parameters<typeof FaseTriturat>[0]['data']}   compact={compact} />
+  if (faseId === 'pomes')      return <FasePomes      data={d as Parameters<typeof FasePomes>[0]['data']}    compact={compact} />
+  if (faseId === 'triturat')   return <FaseTriturat   data={d as Parameters<typeof FaseTriturat>[0]['data']} compact={compact} />
   if (faseId === 'premsat')    return <FasePremsat    data={d} />
   if (faseId === 'bullit')     return <FaseBullit     data={d} />
   if (faseId === 'fermentat')  return <FaseFermentat  data={d} />
@@ -28,20 +28,20 @@ function FaseContent({ faseId, data, compact }: { faseId: string; data: unknown;
   return null
 }
 
-function ColHeader({ fase, state }: {
-  fase: typeof FASES[0]
-  state: 'prev' | 'active' | 'next'
-}) {
+function ColHeader({ label, state }: { label: string; state: 'prev2' | 'prev1' | 'active' | 'next1' | 'next2' }) {
+  const styles = {
+    prev2:  { background: '#0a2318', color: '#0F6E56' },
+    prev1:  { background: '#0a2318', color: '#1D9E75' },
+    active: { background: '#2a1800', color: '#EF9F27' },
+    next1:  { background: '#1a1917', color: '#3a3835', border: '0.5px solid #252422' },
+    next2:  { background: '#1a1917', color: '#2e2c2a', border: '0.5px solid #1e1d1b' },
+  }
+  const s = styles[state]
   return (
     <div className="flex items-center justify-between px-2 py-1.5 rounded-md mb-2 text-xs font-mono uppercase tracking-wider"
-      style={{
-        background: state === 'active' ? '#2a1800' : state === 'prev' ? '#0a2318' : '#1a1917',
-        color: state === 'active' ? '#EF9F27' : state === 'prev' ? '#1D9E75' : '#3a3835',
-        border: state === 'next' ? '0.5px solid #252422' : 'none',
-      }}
-    >
-      <span>{fase.label}</span>
-      {state === 'prev' && <span>✓</span>}
+      style={s}>
+      <span>{label}</span>
+      {(state === 'prev1' || state === 'prev2') && <span style={{ fontSize: '10px' }}>✓</span>}
     </div>
   )
 }
@@ -49,22 +49,45 @@ function ColHeader({ fase, state }: {
 export default function FaseCarousel({ data }: { data: unknown }) {
   const [current, setCurrent] = useState(0)
 
+  const cols: { idx: number; state: 'prev2' | 'prev1' | 'active' | 'next1' | 'next2' }[] = []
+  if (current - 2 >= 0) cols.push({ idx: current - 2, state: 'prev2' })
+  if (current - 1 >= 0) cols.push({ idx: current - 1, state: 'prev1' })
+  cols.push({ idx: current, state: 'active' })
+  if (current + 1 < FASES.length) cols.push({ idx: current + 1, state: 'next1' })
+  if (current + 2 < FASES.length) cols.push({ idx: current + 2, state: 'next2' })
+
+  const widths = {
+    prev2:  '120px',
+    prev1:  '160px',
+    active: '1fr',
+    next1:  '160px',
+    next2:  '120px',
+  }
+
   return (
     <div>
-      <div className="flex gap-3 items-start overflow-hidden">
+      {/* Sidebar + Carrusel */}
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
 
-        {/* Sidebar fases */}
-        <div className="flex flex-col gap-1 flex-shrink-0 pt-8" style={{ width: '40px' }}>
+        {/* Sidebar vertical */}
+        <div style={{
+          display: 'flex', flexDirection: 'column', gap: '4px',
+          flexShrink: 0, paddingTop: '32px', width: '36px',
+        }}>
           {FASES.map((fase, i) => (
             <button
               key={fase.id}
               onClick={() => setCurrent(i)}
               title={fase.label}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-mono font-medium transition-colors"
               style={{
-                background: i === current ? '#2a1800' : i < current ? '#0a2318' : 'none',
+                width: '32px', height: '32px', borderRadius: '7px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '9px', fontWeight: '500', fontFamily: 'DM Mono, monospace',
+                cursor: 'pointer',
+                background: i === current ? '#2a1800' : i < current ? '#0a2318' : 'transparent',
                 color: i === current ? '#EF9F27' : i < current ? '#1D9E75' : '#4a4846',
-                border: i === current ? 'none' : i < current ? 'none' : '0.5px solid #252422',
+                border: i >= current ? '0.5px solid #252422' : 'none',
+                transition: 'all 0.2s',
               }}
             >
               {fase.curt}
@@ -72,58 +95,68 @@ export default function FaseCarousel({ data }: { data: unknown }) {
           ))}
         </div>
 
-        {/* Col anterior */}
-        {current > 0 && (
-          <div
-            className="flex-shrink-0 cursor-pointer"
-            style={{ width: '148px', opacity: 0.6 }}
-            onClick={() => setCurrent(c => c - 1)}
-          >
-            <ColHeader fase={FASES[current - 1]} state="prev" />
-            <FaseContent faseId={FASES[current - 1].id} data={data} compact />
-          </div>
-        )}
+        {/* Grid de columnes */}
+        <div style={{
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: cols.map(c => widths[c.state]).join(' '),
+          gap: '10px',
+          alignItems: 'start',
+          transition: 'grid-template-columns 0.3s ease',
+          minWidth: 0,
+        }}>
+          {cols.map(({ idx, state }) => {
+            const fase = FASES[idx]
+            const isActive = state === 'active'
+            const isCompact = !isActive
+            const opacity = state === 'prev2' ? 0.35 : state === 'next2' ? 0.3 : state === 'next1' ? 0.45 : state === 'prev1' ? 0.65 : 1
 
-        {/* Col activa */}
-        <div className="flex-1 min-w-0">
-          <ColHeader fase={FASES[current]} state="active" />
-          <FaseContent faseId={FASES[current].id} data={data} />
+            return (
+              <div
+                key={fase.id}
+                style={{ opacity, transition: 'opacity 0.3s', minWidth: 0 }}
+                onClick={isCompact ? () => setCurrent(idx) : undefined}
+                className={isCompact ? 'cursor-pointer' : ''}
+              >
+                <ColHeader label={fase.label} state={state} />
+                <div style={{ overflow: isCompact ? 'hidden' : 'visible' }}>
+                  <FaseContent faseId={fase.id} data={data} compact={isCompact} />
+                </div>
+              </div>
+            )
+          })}
         </div>
-
-        {/* Col següent */}
-        {current < FASES.length - 1 && (
-          <div
-            className="flex-shrink-0 cursor-pointer"
-            style={{ width: '148px', opacity: 0.4 }}
-            onClick={() => setCurrent(c => c + 1)}
-          >
-            <ColHeader fase={FASES[current + 1]} state="next" />
-            <FaseContent faseId={FASES[current + 1].id} data={data} compact />
-          </div>
-        )}
       </div>
 
-      {/* Navegació */}
-      <div className="flex items-center justify-between mt-6 pt-4" style={{ borderTop: '0.5px solid #252422' }}>
+      {/* Navegació inferior */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginTop: '24px', paddingTop: '16px', borderTop: '0.5px solid #252422',
+      }}>
         <button
           onClick={() => setCurrent(c => Math.max(0, c - 1))}
           disabled={current === 0}
-          className="font-mono text-xs px-4 py-2 rounded transition-colors disabled:opacity-20"
-          style={{ border: '0.5px solid #252422', background: 'none', color: '#7a7672' }}
+          className="btn-secondary"
+          style={{ opacity: current === 0 ? 0.2 : 1 }}
         >
           ← Anterior
         </button>
 
-        <div className="flex items-center gap-2">
-          {FASES.map((_, i) => (
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          {FASES.map((f, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className="rounded-full transition-all duration-300"
+              title={f.label}
               style={{
                 width: i === current ? '16px' : '6px',
                 height: '6px',
+                borderRadius: '3px',
+                border: 'none',
+                cursor: 'pointer',
                 background: i < current ? '#1D9E75' : i === current ? '#BA7517' : '#252422',
+                transition: 'all 0.25s',
+                padding: 0,
               }}
             />
           ))}
@@ -132,8 +165,8 @@ export default function FaseCarousel({ data }: { data: unknown }) {
         <button
           onClick={() => setCurrent(c => Math.min(FASES.length - 1, c + 1))}
           disabled={current === FASES.length - 1}
-          className="font-mono text-xs px-4 py-2 rounded transition-colors disabled:opacity-20"
-          style={{ background: '#BA7517', color: 'white', border: 'none' }}
+          className="btn-primary"
+          style={{ opacity: current === FASES.length - 1 ? 0.2 : 1 }}
         >
           Següent →
         </button>
