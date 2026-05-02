@@ -79,25 +79,25 @@ function PremsaCard({ premsa, triturades, volUsat, onDelete, onSave, compact }: 
   }
 
   if (compact) return (
-    <div style={S.card}>
-      <div style={S.cardHead}>
-        <span style={S.cardId}>{form.codi}</span>
-        {form.vol_prod_l && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.vol_prod_l} l</span>}
-      </div>
-      {[
-        { label: 'Pes entrada', value: pesTotal > 0 ? `${pesTotal} kg` : null },
-        { label: 'Vol produït', value: form.vol_prod_l ? `${form.vol_prod_l} l` : null },
-        { label: 'Vol usat',    value: volUsat > 0 ? `${volUsat} l` : null },
-      ].map(f => (
-        <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
-          <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
-          <span style={{ ...(f.value ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-            {f.value ?? '—'}
-          </span>
-        </div>
-      ))}
+  <div style={S.card}>
+    <div style={S.cardHead}>
+      <span style={S.cardId}>{form.codi}</span>
+      {form.vol_prod_l && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.vol_prod_l} l</span>}
     </div>
-  )
+    {[
+      { label: 'Pes entrada', value: pesTotal > 0 ? `${pesTotal} kg` : null },
+      { label: 'Vol produït', value: form.vol_prod_l ? `${form.vol_prod_l} l` : null },
+      { label: 'Vol usat',    value: volUsat > 0 ? `${volUsat} l` : null },
+    ].map(f => (
+      <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
+        <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
+        <span style={{ ...(f.value ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+          {f.value ?? '—'}
+        </span>
+      </div>
+    ))}
+  </div>
+)
 
   if (!editing) return (
     <div style={S.card}>
