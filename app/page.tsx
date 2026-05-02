@@ -9,11 +9,7 @@ async function getJornades(): Promise<Jornada[]> {
     .from('jornada')
     .select('*')
     .order('data', { ascending: false })
-
-  if (error) {
-    console.error(error)
-    return []
-  }
+  if (error) return []
   return data ?? []
 }
 
@@ -26,45 +22,65 @@ export default async function HomePage() {
   const jornades = await getJornades()
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
+    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '32px' }}>
         <div>
-          <h2 className="font-serif italic text-2xl text-stone-800">Jornades de producció</h2>
-          <p className="text-xs text-stone-400 font-mono mt-1">{jornades.length} jornades registrades</p>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '24px', color: '#f0ede8', fontWeight: 400 }}>
+            Jornades de producció
+          </h2>
+          <p style={{ fontSize: '11px', color: '#4a4846', fontFamily: 'DM Mono, monospace', marginTop: '4px' }}>
+            {jornades.length} jornades registrades
+          </p>
         </div>
-        <Link
-          href="/jornada/nova"
-          className="font-mono text-xs px-4 py-2 bg-[#BA7517] text-white rounded hover:bg-[#9A6010] transition-colors"
-        >
+        <Link href="/jornada/nova" style={{
+          fontFamily: 'DM Mono, monospace', fontSize: '11px',
+          padding: '6px 14px', borderRadius: '6px',
+          background: '#BA7517', color: '#fff',
+          textDecoration: 'none',
+        }}>
           + Nova jornada
         </Link>
       </div>
 
       {jornades.length === 0 ? (
-        <div className="border border-dashed border-stone-300 rounded-xl p-12 text-center">
-          <p className="text-stone-400 font-mono text-sm">Cap jornada registrada encara.</p>
-          <Link href="/jornada/nova" className="text-[#BA7517] font-mono text-sm mt-2 inline-block hover:underline">
+        <div style={{
+          border: '0.5px dashed #252422', borderRadius: '10px',
+          padding: '48px', textAlign: 'center',
+        }}>
+          <p style={{ color: '#4a4846', fontFamily: 'DM Mono, monospace', fontSize: '13px' }}>
+            Cap jornada registrada encara.
+          </p>
+          <Link href="/jornada/nova" style={{
+            color: '#BA7517', fontFamily: 'DM Mono, monospace',
+            fontSize: '12px', marginTop: '8px', display: 'inline-block',
+          }}>
             Crea la primera jornada →
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {jornades.map((j) => (
             <Link
               key={j.id}
               href={`/jornada/${j.id}`}
-              className="block bg-white border border-stone-200 rounded-xl px-5 py-4 hover:border-[#BA7517] transition-colors group"
+              style={{
+                display: 'block', textDecoration: 'none',
+                background: '#1a1917', border: '0.5px solid #252422',
+                borderRadius: '10px', padding: '14px 18px',
+              }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-mono text-sm font-medium text-stone-800">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '14px', fontWeight: '500', color: '#f0ede8' }}>
                     {formatData(j.data)}
                   </span>
                   {j.notes && (
-                    <span className="text-xs text-stone-400 truncate max-w-xs">{j.notes}</span>
+                    <span style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace' }}>
+                      {j.notes}
+                    </span>
                   )}
                 </div>
-                <span className="text-xs text-stone-400 group-hover:text-[#BA7517] transition-colors">
+                <span style={{ fontSize: '11px', color: '#4a4846', fontFamily: 'DM Mono, monospace' }}>
                   Obrir →
                 </span>
               </div>
