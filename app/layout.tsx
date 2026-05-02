@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import LogoutButton from '@/components/LogoutButton'
 
 export const metadata: Metadata = {
   title: 'Sidra — Producció',
@@ -34,13 +35,14 @@ export default function RootLayout({
           <span style={{ fontSize: '11px', color: '#4a4846', fontFamily: 'DM Mono, monospace' }}>
             producció
           </span>
-          <nav style={{ marginLeft: 'auto', display: 'flex', gap: '20px' }}>
+          <nav style={{ marginLeft: 'auto', display: 'flex', gap: '20px', alignItems: 'center' }}>
             <a href="/" style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
               Jornades
             </a>
             <a href="/configuracio" style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
               Configuració
             </a>
+            <LogoutButton />
           </nav>
         </header>
         <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
