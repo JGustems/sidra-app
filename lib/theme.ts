@@ -14,7 +14,7 @@ export const colors = {
   border2:  '#2e2c2a',
 
   // Text
-  text:     '#c8c4be',
+  text:     '#000000',
   text2:    '#7a7672',
   text3:    '#4a4846',
   textHi:   '#f0ede8',
