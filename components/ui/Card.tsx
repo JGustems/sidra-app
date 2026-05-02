@@ -195,29 +195,50 @@ export function CardCompact({ id, badge, badgeColor, accentLeft, fields }: {
         )}
       </div>
       {fields.map(f => (
-        <div key={f.label} style={{
-          display: 'flex', alignItems: 'center',
-          padding: '4px 8px',
-          borderBottom: `0.5px solid ${colors.bg3}`,
-          overflow: 'hidden',
-        }}>
-          <span style={{
-            fontSize: '8px', textTransform: 'uppercase' as const,
-            letterSpacing: '0.06em', color: colors.text3,
-            width: '40px', flexShrink: 0,
-          }}>
-            {f.label}
-          </span>
-          <span style={{
-            fontSize: '11px',
-            color: f.value != null ? colors.text : colors.border2,
-            fontWeight: f.value != null ? '500' : '400',
-            overflow: 'hidden', textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap', flex: 1, minWidth: 0,
-          }}>
-            {f.value ?? '—'}
-          </span>
-        </div>
+        <div
+  key={f.label}
+  style={{
+    display: 'flex',
+    flexDirection: 'column', // vertical
+    alignItems: 'flex-start',
+
+    padding: '6px 8px',
+    borderBottom: `0.5px solid ${colors.bg3}`,
+    gap: '2px',
+  }}
+>
+  <span
+    style={{
+      fontSize: '8px',
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.06em',
+      color: colors.text3,
+
+      width: '100%',
+      textAlign: 'left',
+    }}
+  >
+    {f.label}
+  </span>
+
+  <span
+    style={{
+      width: '100%',
+
+      fontSize: '11px',
+      color: f.value != null ? colors.text : colors.border2,
+      fontWeight: f.value != null ? '500' : '400',
+
+      textAlign: 'right',
+
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    }}
+  >
+    {f.value ?? '—'}
+  </span>
+</div>
       ))}
     </div>
   )
