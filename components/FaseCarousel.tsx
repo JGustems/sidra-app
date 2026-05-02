@@ -21,10 +21,10 @@ function FaseContent({ faseId, data, compact }: { faseId: string; data: unknown;
   const d = data as Record<string, unknown>
   if (faseId === 'pomes')      return <FasePomes      data={d as Parameters<typeof FasePomes>[0]['data']}    compact={compact} />
   if (faseId === 'triturat')   return <FaseTriturat   data={d as Parameters<typeof FaseTriturat>[0]['data']} compact={compact} />
-  if (faseId === 'premsat')    return <FasePremsat    data={d} />
-  if (faseId === 'bullit')     return <FaseBullit     data={d} />
-  if (faseId === 'fermentat')  return <FaseFermentat  data={d} />
-  if (faseId === 'embotellat') return <FaseEmbotellat data={d} />
+  if (faseId === 'premsat')    return <FasePremsat    data={d} compact={compact} />
+  if (faseId === 'bullit')     return <FaseBullit     data={d} compact={compact} />
+if (faseId === 'fermentat')  return <FaseFermentat  data={d} compact={compact} />
+if (faseId === 'embotellat') return <FaseEmbotellat data={d} compact={compact} />
   return null
 }
 
