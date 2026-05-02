@@ -78,26 +78,25 @@ function EbullidorCard({ ebullidor, premses, volUsat, onDelete, onSave, compact 
   }
 
   if (compact) return (
-    <div style={S.card}>
-      <div style={S.cardHead}>
-        <span style={S.cardId}>{form.codi}</span>
-        {form.vol_final_l && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.vol_final_l} l</span>}
-      </div>
-      {[
-        { label: 'Vol entrada', value: volEntrada > 0 ? `${volEntrada} l` : null },
-        { label: 'Vol final',   value: form.vol_final_l ? `${form.vol_final_l} l` : null },
-        { label: 'T màx',       value: form.t_max_c ? `${form.t_max_c}°C` : null },
-      ].map(f => (
-        <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
-          <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
-          <span style={{ ...(f.value ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-            {f.value ?? '—'}
-          </span>
-        </div>
-      ))}
+  <div style={S.card}>
+    <div style={S.cardHead}>
+      <span style={S.cardId}>{form.codi}</span>
+      {form.vol_final_l && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.vol_final_l} l</span>}
     </div>
-  )
-
+    {[
+      { label: 'Vol entrada', value: volEntrada > 0 ? `${volEntrada} l` : null },
+      { label: 'Vol final',   value: form.vol_final_l ? `${form.vol_final_l} l` : null },
+      { label: 'T màx',       value: form.t_max_c ? `${form.t_max_c}°C` : null },
+    ].map(f => (
+      <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
+        <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
+        <span style={{ ...(f.value ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+          {f.value ?? '—'}
+        </span>
+      </div>
+    ))}
+  </div>
+)
   if (!editing) return (
     <div style={S.card}>
       <div style={S.cardHead}>
@@ -243,24 +242,24 @@ function SucDirecteCard({ suc, premses, volUsat, onDelete, onSave, compact }: {
   }
 
   if (compact) return (
-    <div style={{ ...S.card, borderLeft: '2px solid #1D9E75' }}>
-      <div style={S.cardHead}>
-        <span style={{ ...S.cardId, background: '#0a2318', color: '#1D9E75' }}>{form.codi} — directe</span>
-        {volEntrada > 0 && <span style={{ fontSize: '10px', color: '#1D9E75' }}>{volEntrada} l</span>}
-      </div>
-      {[
-        { label: 'Vol',    value: volEntrada > 0 ? `${volEntrada} l` : null },
-        { label: 'Vol usat', value: volUsat > 0 ? `${volUsat} l` : null },
-      ].map(f => (
-        <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
-          <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
-          <span style={{ ...(f.value ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-            {f.value ?? '—'}
-          </span>
-        </div>
-      ))}
+  <div style={{ ...S.card, borderLeft: '2px solid #1D9E75' }}>
+    <div style={S.cardHead}>
+      <span style={{ ...S.cardId, background: '#0a2318', color: '#1D9E75' }}>{form.codi} — directe</span>
+      {volEntrada > 0 && <span style={{ fontSize: '10px', color: '#1D9E75' }}>{volEntrada} l</span>}
     </div>
-  )
+    {[
+      { label: 'Vol',      value: volEntrada > 0 ? `${volEntrada} l` : null },
+      { label: 'Vol usat', value: volUsat > 0 ? `${volUsat} l` : null },
+    ].map(f => (
+      <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
+        <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
+        <span style={{ ...(f.value ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+          {f.value ?? '—'}
+        </span>
+      </div>
+    ))}
+  </div>
+)
 
   if (!editing) return (
     <div style={{ ...S.card, borderLeft: '2px solid #1D9E75' }}>
