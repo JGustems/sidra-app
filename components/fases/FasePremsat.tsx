@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Premsa, PremsaOrigen, Triturada } from '@/lib/types'
+import { S, colors } from '@/lib/theme'
+import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
 
 type PremsaAmbOrigen = Premsa & { premsa_origen: PremsaOrigen[] }
 
@@ -16,29 +18,6 @@ interface Props {
     sucsDirectes: { suc_directe_origen: { premsa_id: number; vol_l: number }[] }[]
   }
   compact?: boolean
-}
-
-const S = {
-  card:        { background: '#1a1917', border: '0.5px solid #252422', borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
-  cardEditing: { background: '#1a1917', border: '0.5px solid #BA7517', borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
-  cardHead:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderBottom: '0.5px solid #252422', background: '#141412' },
-  cardId:      { fontSize: '11px', fontWeight: '500' as const, color: '#c8c4be', background: '#252422', padding: '2px 8px', borderRadius: '4px' },
-  fieldRow:    { display: 'flex' as const, alignItems: 'center' as const, padding: '7px 12px', borderBottom: '0.5px solid #1e1d1b' },
-  fieldLabel:  { fontSize: '9px', textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: '#4a4846', width: '120px', flexShrink: 0 },
-  fieldValue:  { fontSize: '12px', color: '#c8c4be', fontWeight: '500' as const },
-  fieldEmpty:  { fontSize: '11px', color: '#2e2c2a', fontStyle: 'italic' as const },
-  fieldInput:  { fontFamily: 'DM Mono, monospace', fontSize: '12px', background: 'transparent', border: 'none', borderBottom: '1px solid #2e2c2a', color: '#e8e4de', outline: 'none', flex: 1, padding: '1px 4px' },
-  fieldSelect: { fontFamily: 'DM Mono, monospace', fontSize: '12px', background: '#1a1917', border: 'none', borderBottom: '1px solid #2e2c2a', color: '#e8e4de', outline: 'none', flex: 1, padding: '1px 4px' },
-  cardFoot:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderTop: '0.5px solid #252422', background: '#141412' },
-  badgeSaved:  { fontSize: '9px', background: '#0a2318', color: '#1D9E75', padding: '2px 8px', borderRadius: '10px' },
-  badgeEdit:   { fontSize: '9px', background: '#2a1800', color: '#EF9F27', padding: '2px 8px', borderRadius: '10px' },
-  btnEdit:     { fontFamily: 'DM Mono, monospace', fontSize: '10px', padding: '3px 10px', borderRadius: '5px', border: '0.5px solid #2e2c2a', background: 'none', color: '#7a7672', cursor: 'pointer' },
-  btnSave:     { fontFamily: 'DM Mono, monospace', fontSize: '10px', padding: '3px 14px', borderRadius: '5px', border: 'none', background: '#BA7517', color: '#fff', cursor: 'pointer' },
-  btnCancel:   { fontFamily: 'DM Mono, monospace', fontSize: '10px', padding: '3px 10px', borderRadius: '5px', border: '0.5px solid #252422', background: 'none', color: '#5a5854', cursor: 'pointer' },
-  btnDel:      { fontFamily: 'DM Mono, monospace', fontSize: '10px', border: 'none', background: 'none', color: '#3a3835', cursor: 'pointer' },
-  balOk:       { fontSize: '10px', padding: '5px 10px', borderRadius: '5px', background: '#0a2318', color: '#1D9E75', margin: '0 12px 8px' },
-  balWarn:     { fontSize: '10px', padding: '5px 10px', borderRadius: '5px', background: '#2a1800', color: '#EF9F27', margin: '0 12px 8px' },
-  autoField:   { fontSize: '11px', color: '#4a4846', fontStyle: 'italic' as const },
 }
 
 function PremsaCard({ premsa, triturades, volUsat, onDelete, onSave, compact }: {
@@ -79,124 +58,58 @@ function PremsaCard({ premsa, triturades, volUsat, onDelete, onSave, compact }: 
   }
 
   if (compact) return (
-  <div style={S.card}>
-    <div style={S.cardHead}>
-      <span style={S.cardId}>{form.codi}</span>
-      {form.vol_prod_l && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.vol_prod_l} l</span>}
-    </div>
-    {[
-      { label: 'Pes entrada', value: pesTotal > 0 ? `${pesTotal} kg` : null },
-      { label: 'Vol produït', value: form.vol_prod_l ? `${form.vol_prod_l} l` : null },
-      { label: 'Vol usat',    value: volUsat > 0 ? `${volUsat} l` : null },
-    ].map(f => (
-      <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
-        <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
-        <span style={{ ...(f.value ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-          {f.value ?? '—'}
-        </span>
-      </div>
-    ))}
-  </div>
-)
+    <CardCompact
+      id={form.codi ?? ''}
+      badge={form.vol_prod_l ? `${form.vol_prod_l} l` : undefined}
+      fields={[
+        { label: 'Pes',     value: pesTotal > 0 ? `${pesTotal} kg` : null },
+        { label: 'Vol',     value: form.vol_prod_l ? `${form.vol_prod_l} l` : null },
+        { label: 'Vol usat',value: volUsat > 0 ? `${volUsat} l` : null },
+      ]}
+    />
+  )
 
   if (!editing) return (
-    <div style={S.card}>
-      <div style={S.cardHead}>
-        <span style={S.cardId}>{form.codi}</span>
-        <span style={S.badgeSaved}>desat</span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Pes entrada (kg)</span>
-        <span style={pesTotal > 0 ? S.fieldValue : S.fieldEmpty}>
-          {pesTotal > 0 ? `${pesTotal} kg` : '—'}
-          <span style={{ fontSize: '9px', color: '#4a4846', marginLeft: '6px' }}>automàtic</span>
-        </span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Vol produït (l)</span>
-        <span style={form.vol_prod_l != null ? S.fieldValue : S.fieldEmpty}>{form.vol_prod_l ?? '—'}</span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Vol usat (l)</span>
-        <span style={volUsat > 0 ? S.fieldValue : S.fieldEmpty}>
-          {volUsat > 0 ? `${volUsat} l` : '—'}
-          <span style={{ fontSize: '9px', color: '#4a4846', marginLeft: '6px' }}>de fases següents</span>
-        </span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Eficiència</span>
-        <span style={eficiencia ? S.fieldValue : S.fieldEmpty}>
-          {eficiencia ? `${eficiencia} l/100kg` : '—'}
-        </span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Notes</span>
-        <span style={form.notes ? S.fieldValue : S.fieldEmpty}>{form.notes ?? '—'}</span>
-      </div>
-      <div style={{ padding: '7px 12px', borderBottom: '0.5px solid #1e1d1b' }}>
-        <div style={{ ...S.fieldLabel, marginBottom: '6px' }}>Origen (triturades)</div>
+    <Card>
+      <CardHead id={form.codi ?? ''} saved />
+      <FieldRead label="Pes entrada (kg)" value={pesTotal > 0 ? `${pesTotal} kg` : null} auto />
+      <FieldRead label="Vol produït (l)" value={form.vol_prod_l} />
+      <FieldRead label="Vol usat (l)" value={volUsat > 0 ? `${volUsat} l` : null} auto />
+      <FieldRead label="Eficiència" value={eficiencia ? `${eficiencia} l/100kg` : null} auto />
+      <FieldRead label="Notes" value={form.notes} />
+      <div style={{ padding: '7px 12px', borderBottom: `0.5px solid ${colors.bg3}` }}>
+        <div style={S.sectionHead}>Origen (triturades)</div>
         {origens.length === 0 && <span style={S.fieldEmpty}>—</span>}
         {origens.map((o, i) => {
           const trit = triturades.find(t => t.id === o.triturada_id)
           return (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
-              <span style={{ color: '#7a7672' }}>{trit?.codi}</span>
-              <span style={{ color: '#c8c4be', fontWeight: '500' }}>{o.pes_kg} kg</span>
+              <span style={{ color: colors.text2 }}>{trit?.codi}</span>
+              <span style={{ color: colors.text, fontWeight: '500' }}>{o.pes_kg} kg</span>
             </div>
           )
         })}
       </div>
       {form.vol_prod_l != null && (
-        <div style={balancOk ? S.balOk : S.balWarn}>
-          {pesTotal} kg → {form.vol_prod_l} l produïts · {volUsat} l usats
-          {eficiencia && ` · Eff ${eficiencia} l/100kg`} {balancOk ? '✓' : '⚠'}
-        </div>
+        <Balance
+          ok={balancOk}
+          text={`${pesTotal} kg → ${form.vol_prod_l} l · ${volUsat} l usats${eficiencia ? ` · Eff ${eficiencia} l/100kg` : ''} ${balancOk ? '✓' : '⚠'}`}
+        />
       )}
-      <div style={S.cardFoot}>
-        <button style={S.btnDel} onClick={onDelete} onMouseOver={e => (e.currentTarget.style.color='#E24B4A')} onMouseOut={e => (e.currentTarget.style.color='#3a3835')}>eliminar</button>
-        <button style={S.btnEdit} onClick={() => setEditing(true)}>Editar</button>
-      </div>
-    </div>
+      <CardFootRead onEdit={() => setEditing(true)} onDelete={onDelete} />
+    </Card>
   )
 
   return (
-    <div style={S.cardEditing}>
-      <div style={S.cardHead}>
-        <span style={S.cardId}>{form.codi}</span>
-        <span style={S.badgeEdit}>editant</span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Pes entrada (kg)</span>
-        <span style={S.autoField}>{pesTotal > 0 ? `${pesTotal} kg — suma origens` : 'calculat automàticament'}</span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Vol produït (l)</span>
-        <input
-          style={S.fieldInput}
-          type="number"
-          value={form.vol_prod_l ?? ''}
-          onChange={e => setForm(fm => ({ ...fm, vol_prod_l: parseFloat(e.target.value) || null }))}
-        />
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Vol usat (l)</span>
-        <span style={S.autoField}>{volUsat > 0 ? `${volUsat} l — de fases següents` : 'calculat automàticament'}</span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Eficiència</span>
-        <span style={S.autoField}>{eficiencia ? `${eficiencia} l/100kg` : 'automàtic'}</span>
-      </div>
-      <div style={S.fieldRow}>
-        <span style={S.fieldLabel}>Notes</span>
-        <input
-          style={S.fieldInput}
-          type="text"
-          value={form.notes ?? ''}
-          onChange={e => setForm(fm => ({ ...fm, notes: e.target.value || null }))}
-        />
-      </div>
-      <div style={{ padding: '8px 12px', borderBottom: '0.5px solid #1e1d1b' }}>
-        <div style={{ ...S.fieldLabel, marginBottom: '8px' }}>Origen (triturades)</div>
+    <Card editing>
+      <CardHead id={form.codi ?? ''} saved={false} />
+      <FieldAuto label="Pes entrada (kg)" value={pesTotal > 0 ? `${pesTotal} kg` : null} />
+      <FieldInput label="Vol produït (l)" value={form.vol_prod_l} type="number" onChange={v => setForm(f => ({ ...f, vol_prod_l: v as number }))} />
+      <FieldAuto label="Vol usat (l)" value={volUsat > 0 ? `${volUsat} l` : null} />
+      <FieldAuto label="Eficiència" value={eficiencia ? `${eficiencia} l/100kg` : null} />
+      <FieldInput label="Notes" value={form.notes} onChange={v => setForm(f => ({ ...f, notes: v as string }))} />
+      <div style={{ padding: '8px 12px', borderBottom: `0.5px solid ${colors.bg3}` }}>
+        <div style={S.sectionHead}>Origen (triturades)</div>
         {origens.map((o, i) => (
           <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
             <select
@@ -208,27 +121,17 @@ function PremsaCard({ premsa, triturades, volUsat, onDelete, onSave, compact }: 
             </select>
             <input
               style={{ ...S.fieldInput, width: '60px', flex: 'none' }}
-              type="number"
-              value={o.pes_kg || ''}
-              placeholder="kg"
+              type="number" value={o.pes_kg || ''} placeholder="kg"
               onChange={e => updateOrigen(i, 'pes_kg', parseFloat(e.target.value) || 0)}
             />
-            <span style={{ fontSize: '10px', color: '#4a4846' }}>kg</span>
+            <span style={{ fontSize: '10px', color: colors.text3 }}>kg</span>
             <button onClick={() => setOrigens(o => o.filter((_, j) => j !== i))} style={{ ...S.btnDel, fontSize: '12px' }}>✕</button>
           </div>
         ))}
-        <button onClick={addOrigen} style={{ fontSize: '10px', color: '#BA7517', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'DM Mono, monospace', marginTop: '4px' }}>
-          + Afegir origen
-        </button>
+        <button onClick={addOrigen} style={S.btnAdd}>+ Afegir origen</button>
       </div>
-      <div style={S.cardFoot}>
-        <button style={S.btnDel} onClick={onDelete}>eliminar</button>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <button style={S.btnCancel} onClick={() => setEditing(false)}>Cancel·lar</button>
-          <button style={S.btnSave} onClick={save} disabled={saving}>{saving ? 'Desant...' : 'Desar'}</button>
-        </div>
-      </div>
-    </div>
+      <CardFootEdit onSave={save} onCancel={() => setEditing(false)} onDelete={onDelete} saving={saving} />
+    </Card>
   )
 }
 
@@ -243,12 +146,12 @@ export default function FasePremsat({ data, compact }: Props) {
         .filter(o => o.premsa_id === premsaId)
         .reduce((s, o) => s + (o.vol_l || 0), 0)
     }, 0)
-    const deSucsDirectes = data.sucsDirectes.reduce((sum, s) => {
+    const deSucs = data.sucsDirectes.reduce((sum, s) => {
       return sum + s.suc_directe_origen
         .filter(o => o.premsa_id === premsaId)
         .reduce((s2, o) => s2 + (o.vol_l || 0), 0)
     }, 0)
-    return deEbullidors + deSucsDirectes
+    return deEbullidors + deSucs
   }
 
   function addPremsa() {
@@ -259,7 +162,6 @@ export default function FasePremsat({ data, compact }: Props) {
     const p = premses[idx]
     const origens = form.premsa_origen ?? []
     const totalKg = origens.reduce((s, o) => s + (o.pes_kg || 0), 0)
-
     if (p.id) {
       await supabase.from('premsa').update({ pes_kg: totalKg, vol_prod_l: form.vol_prod_l, notes: form.notes }).eq('id', p.id)
       await supabase.from('premsa_origen').delete().eq('premsa_id', p.id)
@@ -287,7 +189,7 @@ export default function FasePremsat({ data, compact }: Props) {
 
   if (compact) return (
     <div>
-      {premses.length === 0 && <div style={{ fontSize: '10px', color: '#3a3835', padding: '8px 12px' }}>Cap premsa</div>}
+      {premses.length === 0 && <div style={{ fontSize: '10px', color: colors.text3, padding: '8px 12px' }}>Cap premsa</div>}
       {premses.map((p, idx) => (
         <PremsaCard key={p.id ?? `local-${idx}`} premsa={p} triturades={data.triturades} compact
           volUsat={getVolUsat(p.id)}
@@ -299,11 +201,11 @@ export default function FasePremsat({ data, compact }: Props) {
   return (
     <div style={{ maxWidth: '460px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <span style={{ fontSize: '9px', color: '#4a4846', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Premsat</span>
-        <button onClick={addPremsa} style={{ fontSize: '10px', color: '#BA7517', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'DM Mono, monospace' }}>+ Afegir premsa</button>
+        <span style={{ fontSize: '9px', color: colors.text3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Premsat</span>
+        <button onClick={addPremsa} style={S.btnAdd}>+ Afegir premsa</button>
       </div>
       {premses.length === 0 && (
-        <div style={{ border: '0.5px dashed #252422', borderRadius: '8px', padding: '32px', textAlign: 'center', color: '#3a3835', fontSize: '12px' }}>
+        <div style={{ border: `0.5px dashed ${colors.border}`, borderRadius: '8px', padding: '32px', textAlign: 'center', color: colors.text3, fontSize: '12px' }}>
           Cap premsa afegida
         </div>
       )}
