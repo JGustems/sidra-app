@@ -72,24 +72,25 @@ function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
   }
 
   if (compact) return (
-    <div style={S.card}>
-      <div style={S.cardHead}>
-        <span style={S.cardId}>{form.codi}</span>
-        {form.pes_kg && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.pes_kg} kg</span>}
-      </div>
-      {[
-        { label: 'Passades', value: form.passades },
-        { label: 'Pes',      value: form.pes_kg ? `${form.pes_kg} kg` : null },
-        { label: 'Origens',  value: origens.length > 0 ? `${origens.length} poma(es)` : null },
-      ].map(f => (
-        <div key={f.label} style={S.fieldRow}>
-          <span style={S.fieldLabel}>{f.label}</span>
-          <span style={f.value != null ? S.fieldValue : S.fieldEmpty}>{f.value ?? '—'}</span>
-        </div>
-      ))}
+  <div style={S.card}>
+    <div style={S.cardHead}>
+      <span style={S.cardId}>{form.codi}</span>
+      {form.pes_kg && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.pes_kg} kg</span>}
     </div>
-  )
-
+    {[
+      { label: 'Passades', value: form.passades },
+      { label: 'Pes',      value: form.pes_kg ? `${form.pes_kg} kg` : null },
+      { label: 'Origens',  value: origens.length > 0 ? `${origens.length} poma(es)` : null },
+    ].map(f => (
+      <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
+        <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
+        <span style={{ ...( f.value != null ? S.fieldValue : S.fieldEmpty ), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+          {f.value ?? '—'}
+        </span>
+      </div>
+    ))}
+  </div>
+)
   if (!editing) return (
     <div style={S.card}>
       <div style={S.cardHead}>
