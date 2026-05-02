@@ -23,7 +23,6 @@ export default function LoginPage() {
     setMissatge(null)
 
     if (mode === 'register') {
-      // Comprova si el mail està autoritzat
       const { data: autoritzat } = await supabase
         .from('mails_autoritzats')
         .select('id')
@@ -44,15 +43,21 @@ export default function LoginPage() {
       return
     }
 
-    // Login
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
-    if (err) {
+    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
+    
+    if (err || !data.session) {
       setError('Mail o contrasenya incorrectes.')
       setLoading(false)
       return
     }
 
-    window.location.replace('/')
+    // Guardem la sessió manualment i redirigim
+    await supabase.auth.setSession({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+    })
+
+    window.location.href = '/'
   }
 
   return (
@@ -77,7 +82,6 @@ export default function LoginPage() {
           background: '#1a1917', border: '0.5px solid #252422',
           borderRadius: '10px', overflow: 'hidden',
         }}>
-          {/* Tabs login/registre */}
           <div style={{ display: 'flex', borderBottom: '0.5px solid #252422' }}>
             {(['login', 'register'] as const).map(m => (
               <button
