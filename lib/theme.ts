@@ -4,7 +4,7 @@
 
 export const colors = {
   // Fons
-  bg:       '#141412',
+  bg:       '#111111',
   bg2:      '#1a1917',
   bg3:      '#222019',
   bgHead:   '#0e0d0c',
