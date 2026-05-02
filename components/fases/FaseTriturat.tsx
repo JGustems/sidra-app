@@ -12,14 +12,15 @@ interface Props {
     jornada: { id: number }
     pomes: Poma[]
     triturades: TritaradaAmbOrigen[]
+    premses: { premsa_origen: { triturada_id: number; pes_kg: number }[] }[]
   }
   compact?: boolean
 }
 
 const S = {
-  card:        { background: '#f0ede8', border: '0.5px solid #252422', borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
-  cardEditing: { background: '#f0ede8', border: '0.5px solid #BA7517', borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
-  cardHead:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderBottom: '0.5px solid #252422', background: '#1e1c18' },
+  card:        { background: '#1a1917', border: '0.5px solid #252422', borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
+  cardEditing: { background: '#1a1917', border: '0.5px solid #BA7517', borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
+  cardHead:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderBottom: '0.5px solid #252422', background: '#141412' },
   cardId:      { fontSize: '11px', fontWeight: '500' as const, color: '#c8c4be', background: '#252422', padding: '2px 8px', borderRadius: '4px' },
   fieldRow:    { display: 'flex' as const, alignItems: 'center' as const, padding: '7px 12px', borderBottom: '0.5px solid #1e1d1b' },
   fieldLabel:  { fontSize: '9px', textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: '#4a4846', width: '120px', flexShrink: 0 },
@@ -27,7 +28,7 @@ const S = {
   fieldEmpty:  { fontSize: '11px', color: '#2e2c2a', fontStyle: 'italic' as const },
   fieldInput:  { fontFamily: 'DM Mono, monospace', fontSize: '12px', background: 'transparent', border: 'none', borderBottom: '1px solid #2e2c2a', color: '#e8e4de', outline: 'none', flex: 1, padding: '1px 4px' },
   fieldSelect: { fontFamily: 'DM Mono, monospace', fontSize: '12px', background: '#1a1917', border: 'none', borderBottom: '1px solid #2e2c2a', color: '#e8e4de', outline: 'none', flex: 1, padding: '1px 4px' },
-  cardFoot:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderTop: '0.5px solid #252422', background: '#1e1c18' },
+  cardFoot:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderTop: '0.5px solid #252422', background: '#141412' },
   badgeSaved:  { fontSize: '9px', background: '#0a2318', color: '#1D9E75', padding: '2px 8px', borderRadius: '10px' },
   badgeEdit:   { fontSize: '9px', background: '#2a1800', color: '#EF9F27', padding: '2px 8px', borderRadius: '10px' },
   btnEdit:     { fontFamily: 'DM Mono, monospace', fontSize: '10px', padding: '3px 10px', borderRadius: '5px', border: '0.5px solid #2e2c2a', background: 'none', color: '#7a7672', cursor: 'pointer' },
@@ -36,11 +37,13 @@ const S = {
   btnDel:      { fontFamily: 'DM Mono, monospace', fontSize: '10px', border: 'none', background: 'none', color: '#3a3835', cursor: 'pointer' },
   balOk:       { fontSize: '10px', padding: '5px 10px', borderRadius: '5px', background: '#0a2318', color: '#1D9E75', margin: '0 12px 8px' },
   balWarn:     { fontSize: '10px', padding: '5px 10px', borderRadius: '5px', background: '#2a1800', color: '#EF9F27', margin: '0 12px 8px' },
+  autoField:   { fontSize: '11px', color: '#4a4846', fontStyle: 'italic' as const },
 }
 
-function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
+function TritaradaCard({ triturada, pomes, pesUsat, onDelete, onSave, compact }: {
   triturada: Partial<TritaradaAmbOrigen> & { _local?: boolean }
   pomes: Poma[]
+  pesUsat: number
   onDelete: () => void
   onSave: (t: Partial<TritaradaAmbOrigen>) => void
   compact?: boolean
@@ -52,8 +55,9 @@ function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
   )
   const [saving, setSaving] = useState(false)
 
-  const totalEntrada = origens.reduce((s, o) => s + (o.pes_kg || 0), 0)
-  const balancOk = form.pes_kg ? Math.abs(totalEntrada - form.pes_kg) < 0.1 : false
+  // Pes total = suma dels origens
+  const pesTotal = origens.reduce((s, o) => s + (o.pes_kg || 0), 0)
+  const balancOk = pesUsat > 0 && Math.abs(pesUsat - pesTotal) < 0.1
 
   function addOrigen() {
     if (pomes.length === 0) return
@@ -66,47 +70,60 @@ function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
 
   async function save() {
     setSaving(true)
-    await onSave({ ...form, triturada_origen: origens.map(o => ({ ...o, triturada_id: triturada.id ?? 0, id: 0 })) })
+    await onSave({ ...form, pes_kg: pesTotal, triturada_origen: origens.map(o => ({ ...o, triturada_id: triturada.id ?? 0, id: 0 })) })
     setSaving(false)
     setEditing(false)
   }
 
   if (compact) return (
-  <div style={S.card}>
-    <div style={S.cardHead}>
-      <span style={S.cardId}>{form.codi}</span>
-      {form.pes_kg && <span style={{ fontSize: '10px', color: '#5a5854' }}>{form.pes_kg} kg</span>}
-    </div>
-    {[
-      { label: 'Passades', value: form.passades },
-      { label: 'Pes',      value: form.pes_kg ? `${form.pes_kg} kg` : null },
-      { label: 'Origens',  value: origens.length > 0 ? `${origens.length} poma(es)` : null },
-    ].map(f => (
-      <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
-        <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
-        <span style={{ ...( f.value != null ? S.fieldValue : S.fieldEmpty ), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-          {f.value ?? '—'}
-        </span>
+    <div style={S.card}>
+      <div style={S.cardHead}>
+        <span style={S.cardId}>{form.codi}</span>
+        {pesTotal > 0 && <span style={{ fontSize: '10px', color: '#5a5854' }}>{pesTotal} kg</span>}
       </div>
-    ))}
-  </div>
-)
+      {[
+        { label: 'Passades', value: form.passades },
+        { label: 'Pes total', value: pesTotal > 0 ? `${pesTotal} kg` : null },
+        { label: 'Pes usat',  value: pesUsat > 0 ? `${pesUsat} kg` : null },
+      ].map(f => (
+        <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
+          <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
+          <span style={{ ...(f.value != null ? S.fieldValue : S.fieldEmpty), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+            {f.value ?? '—'}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+
   if (!editing) return (
     <div style={S.card}>
       <div style={S.cardHead}>
         <span style={S.cardId}>{form.codi}</span>
         <span style={S.badgeSaved}>desat</span>
       </div>
-      {[
-        { label: 'Passades',      value: form.passades },
-        { label: 'Pes total (kg)', value: form.pes_kg },
-        { label: 'Notes',         value: form.notes },
-      ].map(f => (
-        <div key={f.label} style={S.fieldRow}>
-          <span style={S.fieldLabel}>{f.label}</span>
-          <span style={f.value != null ? S.fieldValue : S.fieldEmpty}>{f.value ?? '—'}</span>
-        </div>
-      ))}
+      <div style={S.fieldRow}>
+        <span style={S.fieldLabel}>Passades</span>
+        <span style={form.passades != null ? S.fieldValue : S.fieldEmpty}>{form.passades ?? '—'}</span>
+      </div>
+      <div style={S.fieldRow}>
+        <span style={S.fieldLabel}>Pes total (kg)</span>
+        <span style={pesTotal > 0 ? S.fieldValue : S.fieldEmpty}>
+          {pesTotal > 0 ? `${pesTotal} kg` : '—'}
+          <span style={{ fontSize: '9px', color: '#4a4846', marginLeft: '6px' }}>automàtic</span>
+        </span>
+      </div>
+      <div style={S.fieldRow}>
+        <span style={S.fieldLabel}>Pes usat (kg)</span>
+        <span style={pesUsat > 0 ? S.fieldValue : S.fieldEmpty}>
+          {pesUsat > 0 ? `${pesUsat} kg` : '—'}
+          <span style={{ fontSize: '9px', color: '#4a4846', marginLeft: '6px' }}>de les premses</span>
+        </span>
+      </div>
+      <div style={S.fieldRow}>
+        <span style={S.fieldLabel}>Notes</span>
+        <span style={form.notes ? S.fieldValue : S.fieldEmpty}>{form.notes ?? '—'}</span>
+      </div>
       <div style={{ padding: '7px 12px', borderBottom: '0.5px solid #1e1d1b' }}>
         <div style={{ ...S.fieldLabel, marginBottom: '6px' }}>Origen (pomes)</div>
         {origens.length === 0 && <span style={S.fieldEmpty}>—</span>}
@@ -120,8 +137,8 @@ function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
           )
         })}
       </div>
-      <div style={balancOk ? S.balOk : S.balWarn}>
-        Entrada: {totalEntrada} kg {form.pes_kg ? `/ declarat: ${form.pes_kg} kg` : ''} {balancOk ? '✓' : '⚠ revisa els pesos'}
+      <div style={balancOk ? S.balOk : pesUsat > 0 ? S.balWarn : S.balOk}>
+        {pesTotal} kg totals · {pesUsat > 0 ? `${pesUsat} kg usats` : 'sense usar encara'} {balancOk ? '✓' : ''}
       </div>
       <div style={S.cardFoot}>
         <button style={S.btnDel} onClick={onDelete} onMouseOver={e => (e.currentTarget.style.color='#E24B4A')} onMouseOut={e => (e.currentTarget.style.color='#3a3835')}>eliminar</button>
@@ -136,21 +153,28 @@ function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
         <span style={S.cardId}>{form.codi}</span>
         <span style={S.badgeEdit}>editant</span>
       </div>
-      {[
-        { label: 'Passades',       field: 'passades', type: 'number' },
-        { label: 'Pes total (kg)', field: 'pes_kg',   type: 'number' },
-        { label: 'Notes',          field: 'notes',    type: 'text'   },
-      ].map(f => (
-        <div key={f.field} style={S.fieldRow}>
-          <span style={S.fieldLabel}>{f.label}</span>
-          <input
-            style={S.fieldInput}
-            type={f.type}
-            value={(form as Record<string, unknown>)[f.field] as string ?? ''}
-            onChange={e => setForm(fm => ({ ...fm, [f.field]: f.type === 'number' ? parseFloat(e.target.value) || null : e.target.value }))}
-          />
-        </div>
-      ))}
+      <div style={S.fieldRow}>
+        <span style={S.fieldLabel}>Passades</span>
+        <input
+          style={S.fieldInput}
+          type="number"
+          value={form.passades ?? ''}
+          onChange={e => setForm(fm => ({ ...fm, passades: parseInt(e.target.value) || 1 }))}
+        />
+      </div>
+      <div style={S.fieldRow}>
+        <span style={S.fieldLabel}>Pes total (kg)</span>
+        <span style={S.autoField}>{pesTotal > 0 ? `${pesTotal} kg — suma dels origens` : 'calculat automàticament'}</span>
+      </div>
+      <div style={S.fieldRow}>
+        <span style={S.fieldLabel}>Notes</span>
+        <input
+          style={S.fieldInput}
+          type="text"
+          value={form.notes ?? ''}
+          onChange={e => setForm(fm => ({ ...fm, notes: e.target.value || null }))}
+        />
+      </div>
       <div style={{ padding: '8px 12px', borderBottom: '0.5px solid #1e1d1b' }}>
         <div style={{ ...S.fieldLabel, marginBottom: '8px' }}>Origen (pomes)</div>
         {origens.map((o, i) => (
@@ -177,9 +201,6 @@ function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
           + Afegir origen
         </button>
       </div>
-      <div style={balancOk ? S.balOk : S.balWarn}>
-        Entrada: {totalEntrada} kg {form.pes_kg ? `/ declarat: ${form.pes_kg} kg` : ''} {balancOk ? '✓' : '⚠ revisa els pesos'}
-      </div>
       <div style={S.cardFoot}>
         <button style={S.btnDel} onClick={onDelete}>eliminar</button>
         <div style={{ display: 'flex', gap: '6px' }}>
@@ -194,6 +215,15 @@ function TritaradaCard({ triturada, pomes, onDelete, onSave, compact }: {
 export default function FaseTriturat({ data, compact }: Props) {
   const router = useRouter()
   const [triturades, setTriturades] = useState<(Partial<TritaradaAmbOrigen> & { _local?: boolean })[]>(data.triturades)
+
+  function getPesUsat(tritId: number | undefined) {
+    if (!tritId) return 0
+    return data.premses.reduce((sum, p) => {
+      return sum + p.premsa_origen
+        .filter(o => o.triturada_id === tritId)
+        .reduce((s, o) => s + (o.pes_kg || 0), 0)
+    }, 0)
+  }
 
   function addTriturada() {
     setTriturades(t => [...t, { codi: `T${t.length + 1}`, jornada_id: data.jornada.id, passades: 1, triturada_origen: [], _local: true }])
@@ -231,6 +261,7 @@ export default function FaseTriturat({ data, compact }: Props) {
       {triturades.length === 0 && <div style={{ fontSize: '10px', color: '#3a3835', padding: '8px 12px' }}>Cap triturada</div>}
       {triturades.map((t, idx) => (
         <TritaradaCard key={t.id ?? `local-${idx}`} triturada={t} pomes={data.pomes} compact
+          pesUsat={getPesUsat(t.id)}
           onDelete={() => deleteTriturada(idx)} onSave={f => saveTriturada(idx, f)} />
       ))}
     </div>
@@ -249,6 +280,7 @@ export default function FaseTriturat({ data, compact }: Props) {
       )}
       {triturades.map((t, idx) => (
         <TritaradaCard key={t.id ?? `local-${idx}`} triturada={t} pomes={data.pomes}
+          pesUsat={getPesUsat(t.id)}
           onDelete={() => deleteTriturada(idx)} onSave={f => saveTriturada(idx, f)} />
       ))}
     </div>
