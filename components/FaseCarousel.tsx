@@ -36,48 +36,44 @@ function ColHeader({ label, state }: { label: string; state: 'prev2' | 'prev1' |
     next1:  { background: '#1a1917', color: '#3a3835', border: '0.5px solid #252422' },
     next2:  { background: '#1a1917', color: '#2e2c2a', border: '0.5px solid #1e1d1b' },
   }
-  const s = styles[state]
   return (
-    <div className="flex items-center justify-between px-2 py-1.5 rounded-md mb-2 text-xs font-mono uppercase tracking-wider"
-      style={s}>
+    <div style={{
+      ...styles[state],
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '4px 8px', borderRadius: '6px', marginBottom: '8px',
+      fontSize: '9px', fontFamily: 'DM Mono, monospace',
+      textTransform: 'uppercase', letterSpacing: '0.09em',
+    }}>
       <span>{label}</span>
-      {(state === 'prev1' || state === 'prev2') && <span style={{ fontSize: '10px' }}>✓</span>}
+      {(state === 'prev1' || state === 'prev2') && <span>✓</span>}
     </div>
   )
 }
 
+type ColState = 'prev2' | 'prev1' | 'active' | 'next1' | 'next2'
+
 export default function FaseCarousel({ data }: { data: unknown }) {
   const [current, setCurrent] = useState(0)
 
-  const cols: { idx: number; state: 'prev2' | 'prev1' | 'active' | 'next1' | 'next2'; empty?: boolean }[] = []
-if (current - 2 >= 0) cols.push({ idx: current - 2, state: 'prev2' })
-else cols.push({ idx: -2, state: 'prev2', empty: true })
-if (current - 1 >= 0) cols.push({ idx: current - 1, state: 'prev1' })
-else cols.push({ idx: -1, state: 'prev1', empty: true })
-cols.push({ idx: current, state: 'active' })
-if (current + 1 < FASES.length) cols.push({ idx: current + 1, state: 'next1' })
-else cols.push({ idx: -3, state: 'next1', empty: true })
-if (current + 2 < FASES.length) cols.push({ idx: current + 2, state: 'next2' })
-else cols.push({ idx: -4, state: 'next2', empty: true })
+  // Columnes esquerra (màx 2)
+  const leftCols: { idx: number; state: ColState }[] = []
+  if (current - 2 >= 0) leftCols.push({ idx: current - 2, state: 'prev2' })
+  if (current - 1 >= 0) leftCols.push({ idx: current - 1, state: 'prev1' })
 
-  const widths = {
-    prev2:  '120px',
-    prev1:  '160px',
-    active: '1fr',
-    next1:  '160px',
-    next2:  '120px',
-  }
+  // Columnes dreta (màx 2)
+  const rightCols: { idx: number; state: ColState }[] = []
+  if (current + 1 < FASES.length) rightCols.push({ idx: current + 1, state: 'next1' })
+  if (current + 2 < FASES.length) rightCols.push({ idx: current + 2, state: 'next2' })
+
+  const sideWidth = { prev2: '110px', prev1: '150px', next1: '150px', next2: '110px' }
+  const sideOpacity = { prev2: 0.35, prev1: 0.65, next1: 0.45, next2: 0.3 }
 
   return (
     <div>
-      {/* Sidebar + Carrusel */}
       <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
 
         {/* Sidebar vertical */}
-        <div style={{
-          display: 'flex', flexDirection: 'column', gap: '4px',
-          flexShrink: 0, paddingTop: '32px', width: '36px',
-        }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0, paddingTop: '30px', width: '36px' }}>
           {FASES.map((fase, i) => (
             <button
               key={fase.id}
@@ -99,44 +95,44 @@ else cols.push({ idx: -4, state: 'next2', empty: true })
           ))}
         </div>
 
-        {/* Grid de columnes */}
-        <div style={{
-          flex: 1,
-          display: 'grid',
-          gridTemplateColumns: cols.map(c => widths[c.state]).join(' '),
-          gap: '10px',
-          alignItems: 'start',
-          transition: 'grid-template-columns 0.3s ease',
-          minWidth: 0,
-        }}>
-          {cols.map(({ idx, state, empty }) => {
-  const fase = !empty ? FASES[idx] : null
-  const isActive = state === 'active'
-  const isCompact = !isActive
-  const opacity = state === 'prev2' ? 0.35 : state === 'next2' ? 0.3 : state === 'next1' ? 0.45 : state === 'prev1' ? 0.65 : 1
+        {/* Columnes esquerra */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flexShrink: 0 }}>
+          {leftCols.map(({ idx, state }) => (
+            <div
+              key={idx}
+              style={{ width: sideWidth[state as keyof typeof sideWidth], opacity: sideOpacity[state as keyof typeof sideOpacity], cursor: 'pointer', transition: 'opacity 0.3s', flexShrink: 0 }}
+              onClick={() => setCurrent(idx)}
+            >
+              <ColHeader label={FASES[idx].label} state={state} />
+              <FaseContent faseId={FASES[idx].id} data={data} compact />
+            </div>
+          ))}
+          {/* Espai buit si no hi ha 2 columnes esquerra */}
+          {leftCols.length < 2 && (
+            <div style={{ width: leftCols.length === 0 ? '270px' : '110px', flexShrink: 0 }} />
+          )}
+        </div>
 
-  return (
-    <div
-      key={`col-${idx}`}
-      style={{
-        opacity: empty ? 0 : opacity,
-        transition: 'opacity 0.3s',
-        minWidth: 0,
-        maxWidth: isActive ? '480px' : undefined,
-      }}
-      onClick={isCompact && !empty && fase ? () => setCurrent(idx) : undefined}
-      className={isCompact && !empty ? 'cursor-pointer' : ''}
-    >
-      {!empty && fase && <ColHeader label={fase.label} state={state} />}
-      {!empty && fase && (
-        <div style={{ overflow: isCompact ? 'hidden' : 'visible' }}>
-          <FaseContent faseId={fase.id} data={data} compact={isCompact} />
+        {/* Columna activa */}
+        <div style={{ width: '460px', flexShrink: 0 }}>
+          <ColHeader label={FASES[current].label} state="active" />
+          <FaseContent faseId={FASES[current].id} data={data} />
         </div>
-      )}
-    </div>
-  )
-})}
+
+        {/* Columnes dreta — enganxades a la central */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flexShrink: 0 }}>
+          {rightCols.map(({ idx, state }) => (
+            <div
+              key={idx}
+              style={{ width: sideWidth[state as keyof typeof sideWidth], opacity: sideOpacity[state as keyof typeof sideOpacity], cursor: 'pointer', transition: 'opacity 0.3s', flexShrink: 0 }}
+              onClick={() => setCurrent(idx)}
+            >
+              <ColHeader label={FASES[idx].label} state={state} />
+              <FaseContent faseId={FASES[idx].id} data={data} compact />
+            </div>
+          ))}
         </div>
+
       </div>
 
       {/* Navegació inferior */}
@@ -147,8 +143,11 @@ else cols.push({ idx: -4, state: 'next2', empty: true })
         <button
           onClick={() => setCurrent(c => Math.max(0, c - 1))}
           disabled={current === 0}
-          className="btn-secondary"
-          style={{ opacity: current === 0 ? 0.2 : 1 }}
+          style={{
+            fontFamily: 'DM Mono, monospace', fontSize: '11px', padding: '5px 14px',
+            borderRadius: '5px', border: '0.5px solid #252422', background: 'none',
+            color: '#7a7672', cursor: 'pointer', opacity: current === 0 ? 0.2 : 1,
+          }}
         >
           ← Anterior
         </button>
@@ -160,14 +159,10 @@ else cols.push({ idx: -4, state: 'next2', empty: true })
               onClick={() => setCurrent(i)}
               title={f.label}
               style={{
-                width: i === current ? '16px' : '6px',
-                height: '6px',
-                borderRadius: '3px',
-                border: 'none',
-                cursor: 'pointer',
+                width: i === current ? '16px' : '6px', height: '6px',
+                borderRadius: '3px', border: 'none', cursor: 'pointer', padding: 0,
                 background: i < current ? '#1D9E75' : i === current ? '#BA7517' : '#252422',
                 transition: 'all 0.25s',
-                padding: 0,
               }}
             />
           ))}
@@ -176,8 +171,11 @@ else cols.push({ idx: -4, state: 'next2', empty: true })
         <button
           onClick={() => setCurrent(c => Math.min(FASES.length - 1, c + 1))}
           disabled={current === FASES.length - 1}
-          className="btn-primary"
-          style={{ opacity: current === FASES.length - 1 ? 0.2 : 1 }}
+          style={{
+            fontFamily: 'DM Mono, monospace', fontSize: '11px', padding: '5px 14px',
+            borderRadius: '5px', border: 'none', background: '#BA7517',
+            color: '#fff', cursor: 'pointer', opacity: current === FASES.length - 1 ? 0.2 : 1,
+          }}
         >
           Següent →
         </button>
