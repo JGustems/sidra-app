@@ -61,23 +61,25 @@ function PomaCard({ poma, pesUsat, onDelete, onSave, compact }: {
   const balancOk = form.pes_total_kg ? Math.abs(pesUsat - form.pes_total_kg) < 0.5 : false
 
   if (compact) return (
-    <div style={S.card}>
-      <div style={S.cardHead}>
-        <span style={S.cardId}>{form.codi}</span>
-        {pesUsat > 0 && <span style={{ fontSize: '10px', color: '#5a5854' }}>{pesUsat} kg</span>}
-      </div>
-      {[
-        { label: 'Varietat', value: form.varietat },
-        { label: 'Pes total', value: form.pes_total_kg ? `${form.pes_total_kg} kg` : null },
-        { label: 'Pes usat', value: pesUsat > 0 ? `${pesUsat} kg` : null },
-      ].map(f => (
-        <div key={f.label} style={S.fieldRow}>
-          <span style={S.fieldLabel}>{f.label}</span>
-          <span style={f.value ? S.fieldValue : S.fieldEmpty}>{f.value ?? '—'}</span>
-        </div>
-      ))}
+  <div style={S.card}>
+    <div style={S.cardHead}>
+      <span style={S.cardId}>{form.codi}</span>
+      {pesUsat > 0 && <span style={{ fontSize: '10px', color: '#5a5854' }}>{pesUsat} kg</span>}
     </div>
-  )
+    {[
+      { label: 'Varietat', value: form.varietat },
+      { label: 'Pes total', value: form.pes_total_kg ? `${form.pes_total_kg} kg` : null },
+      { label: 'Pes usat',  value: pesUsat > 0 ? `${pesUsat} kg` : null },
+    ].map(f => (
+      <div key={f.label} style={{ ...S.fieldRow, gap: '4px', overflow: 'hidden' }}>
+        <span style={{ ...S.fieldLabel, width: '60px', flexShrink: 0 }}>{f.label}</span>
+        <span style={{ ...( f.value ? S.fieldValue : S.fieldEmpty ), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+          {f.value ?? '—'}
+        </span>
+      </div>
+    ))}
+  </div>
+)
 
   if (!editing) return (
     <div style={S.card}>
