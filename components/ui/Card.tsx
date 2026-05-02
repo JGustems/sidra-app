@@ -184,11 +184,12 @@ export function CardCompact({ id, badge, badgeColor, accentLeft, fields }: {
           ...S.cardId,
           ...(badgeColor === 'teal' ? { background: colors.tealBg, color: colors.teal } : {}),
           ...(badgeColor === 'amber' ? { background: colors.amberBg, color: colors.amberHi } : {}),
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '65%',
         }}>
           {id}
         </span>
         {badge && (
-          <span style={{ fontSize: '10px', color: badgeColor === 'teal' ? colors.teal : colors.text3 }}>
+          <span style={{ fontSize: '10px', color: badgeColor === 'teal' ? colors.teal : colors.text3, flexShrink: 0 }}>
             {badge}
           </span>
         )}
@@ -196,14 +197,14 @@ export function CardCompact({ id, badge, badgeColor, accentLeft, fields }: {
       {fields.map(f => (
         <div key={f.label} style={{
           display: 'flex', alignItems: 'center',
-          padding: '5px 10px',
+          padding: '4px 8px',
           borderBottom: `0.5px solid ${colors.bg3}`,
-          gap: '4px', overflow: 'hidden',
+          overflow: 'hidden',
         }}>
           <span style={{
-            fontSize: '9px', textTransform: 'uppercase' as const,
+            fontSize: '8px', textTransform: 'uppercase' as const,
             letterSpacing: '0.06em', color: colors.text3,
-            width: '55px', flexShrink: 0,
+            width: '40px', flexShrink: 0,
           }}>
             {f.label}
           </span>
@@ -212,7 +213,7 @@ export function CardCompact({ id, badge, badgeColor, accentLeft, fields }: {
             color: f.value != null ? colors.text : colors.border2,
             fontWeight: f.value != null ? '500' : '400',
             overflow: 'hidden', textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap', flex: 1,
+            whiteSpace: 'nowrap', flex: 1, minWidth: 0,
           }}>
             {f.value ?? '—'}
           </span>
