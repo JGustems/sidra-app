@@ -4,34 +4,33 @@
 
 export const colors = {
   // Fons
-  bg:       '#111111',
-  bg2:      '#bdb3b3',
-  bg3:      '#222019',
-  bgHead:   '#0e0d0c',
+  bg:       '#0f1115',
+  bg2:      '#161a22',
+  bg3:      '#1d2330',
+  bgHead:   '#0b0d12',
 
   // Bordes
-  border:   '#252422',
-  border2:  '#2e2c2a',
+  border:   '#2a3140',
+  border2:  '#394255',
 
   // Text
-  text:     '#000000',
-  text2:    '#7a7672',
-  text3:    '#4a4846',
-  textHi:   '#f0ede8',
+  text:     '#eef2f7',
+  text2:    '#b3bccb',
+  text3:    '#7f8a9d',
+  textHi:   '#ffffff',
 
-  // Accent ambre (accions principals)
-  amber:    '#BA7517',
-  amberHi:  '#EF9F27',
-  amberBg:  '#2a1800',
+  // Accent ambre
+  amber:    '#d48a24',
+  amberHi:  '#ffb347',
+  amberBg:  '#2d1d08',
 
-  // Accent verd (desat / ok)
-  teal:     '#1D9E75',
-  tealBg:   '#0a2318',
+  // Accent teal
+  teal:     '#23b58f',
+  tealBg:   '#0b2a22',
 
   // Perill
-  danger:   '#E24B4A',
+  danger:   '#ef5b5b',
 }
-
 export const S = {
   // Cards
   card:        { background: colors.bg2, border: `0.5px solid ${colors.border}`, borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
