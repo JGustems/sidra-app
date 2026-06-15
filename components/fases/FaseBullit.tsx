@@ -6,7 +6,9 @@ import { supabase } from '@/lib/supabase'
 import type { Ebullidor, EbullidorOrigen, SucDirecte, SucDirecteOrigen, Premsa } from '@/lib/types'
 import { S, colors } from '@/lib/theme'
 import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
-
+console.log("Comprovant imports de Card:", { 
+  Card, CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact 
+})
 type EbullidorAmbOrigen = Ebullidor & { ebullidor_origen: EbullidorOrigen[] }
 type SucDirecteAmbOrigen = SucDirecte & { suc_directe_origen: SucDirecteOrigen[] }
 
