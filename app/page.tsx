@@ -14,6 +14,26 @@ async function getJornades(): Promise<Jornada[]> {
   return data ?? []
 }
 
+async function getLots(jornadaId: number): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('fermentador')
+    .select('lot')
+    .eq('jornada_id', jornadaId)
+    .not('lot', 'is', null)
+    .order('lot', { ascending: true })
+  
+  if (error || !data) return []
+  
+  // Filtrar els lots únics i sense valors buits
+  const lotsUnics = Array.from(new Set(
+    data
+      .map(f => f.lot)
+      .filter((lot): lot is string => lot !== null && lot !== '')
+  ))
+  
+  return lotsUnics
+}
+
 function formatData(iso: string) {
   const [y, m, d] = iso.split('-')
   return `${d}/${m}/${y}`
@@ -21,6 +41,14 @@ function formatData(iso: string) {
 
 export default async function HomePage() {
   const jornades = await getJornades()
+
+  // Carregar lots per a cada jornada
+  const jornadesAmbLots = await Promise.all(
+    jornades.map(async (j) => ({
+      ...j,
+      lots: await getLots(j.id),
+    }))
+  )
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -60,7 +88,7 @@ export default async function HomePage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {jornades.map((j) => (
+          {jornadesAmbLots.map((j) => (
             <Link
               key={j.id}
               href={`/jornada/${j.id}`}
@@ -85,6 +113,13 @@ export default async function HomePage() {
                   Obrir →
                 </span>
               </div>
+              {j.lots.length > 0 && (
+                <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: `0.5px solid ${colors.border}` }}>
+                  <span style={{ fontSize: '10px', color: colors.text3, fontFamily: 'DM Mono, monospace' }}>
+                    Lots: <span style={{ color: colors.amber, fontWeight: '500' }}>{j.lots.join(', ')}</span>
+                  </span>
+                </div>
+              )}
             </Link>
           ))}
         </div>
