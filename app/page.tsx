@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import type { Jornada } from '@/lib/types'
+import { colors } from '@/lib/theme'
 
 export const revalidate = 0
 
@@ -25,17 +26,17 @@ export default async function HomePage() {
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '32px' }}>
         <div>
-          <h2 style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '24px', color: '#f0ede8', fontWeight: 400 }}>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: '24px', color: colors.textHi, fontWeight: 400 }}>
             Jornades de producció
           </h2>
-          <p style={{ fontSize: '11px', color: '#4a4846', fontFamily: 'DM Mono, monospace', marginTop: '4px' }}>
+          <p style={{ fontSize: '11px', color: colors.text3, fontFamily: 'DM Mono, monospace', marginTop: '4px' }}>
             {jornades.length} jornades registrades
           </p>
         </div>
         <Link href="/jornada/nova" style={{
           fontFamily: 'DM Mono, monospace', fontSize: '11px',
           padding: '6px 14px', borderRadius: '6px',
-          background: '#BA7517', color: '#fff',
+          background: colors.teal, color: '#fff',
           textDecoration: 'none',
         }}>
           + Nova jornada
@@ -44,14 +45,14 @@ export default async function HomePage() {
 
       {jornades.length === 0 ? (
         <div style={{
-          border: '0.5px dashed #252422', borderRadius: '10px',
+          border: `0.5px dashed ${colors.border}`, borderRadius: '10px',
           padding: '48px', textAlign: 'center',
         }}>
-          <p style={{ color: '#4a4846', fontFamily: 'DM Mono, monospace', fontSize: '13px' }}>
+          <p style={{ color: colors.text2, fontFamily: 'DM Mono, monospace', fontSize: '13px' }}>
             Cap jornada registrada encara.
           </p>
           <Link href="/jornada/nova" style={{
-            color: '#BA7517', fontFamily: 'DM Mono, monospace',
+            color: colors.teal, fontFamily: 'DM Mono, monospace',
             fontSize: '12px', marginTop: '8px', display: 'inline-block',
           }}>
             Crea la primera jornada →
@@ -65,22 +66,22 @@ export default async function HomePage() {
               href={`/jornada/${j.id}`}
               style={{
                 display: 'block', textDecoration: 'none',
-                background: '#1a1917', border: '0.5px solid #252422',
+                background: colors.bg2, border: `0.5px solid ${colors.border}`,
                 borderRadius: '10px', padding: '14px 18px',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '14px', fontWeight: '500', color: '#f0ede8' }}>
+                  <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '14px', fontWeight: '500', color: colors.textHi }}>
                     {formatData(j.data)}
                   </span>
                   {j.notes && (
-                    <span style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace' }}>
+                    <span style={{ fontSize: '11px', color: colors.text2, fontFamily: 'DM Mono, monospace' }}>
                       {j.notes}
                     </span>
                   )}
                 </div>
-                <span style={{ fontSize: '11px', color: '#4a4846', fontFamily: 'DM Mono, monospace' }}>
+                <span style={{ fontSize: '11px', color: colors.text3, fontFamily: 'DM Mono, monospace' }}>
                   Obrir →
                 </span>
               </div>
