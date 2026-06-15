@@ -58,7 +58,7 @@ function EbullidorCard({ ebullidor, premses, volUsat, onDelete, onSave, compact 
   }
 
   if (compact) return (
-    <CardCompact
+    <div>COMPACTE</div>
       id={form.codi ?? ''}
       badge={form.vol_final_l ? `${form.vol_final_l} l` : undefined}
       fields={[
@@ -173,7 +173,7 @@ function SucDirecteCard({ suc, premses, volUsat, onDelete, onSave, compact }: {
   }
 
   if (compact) return (
-    <CardCompact
+    <div>COMPACTE</div>
       id={`${form.codi} — directe`}
       badgeColor="teal"
       accentLeft="teal"
