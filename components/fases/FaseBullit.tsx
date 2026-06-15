@@ -22,6 +22,7 @@ interface Props {
 }
 
 function EbullidorCard({ ebullidor, premses, volUsat, onDelete, onSave, compact }: {
+  console.log('EbullidorCard', { ebullidor, compact })
   ebullidor: Partial<EbullidorAmbOrigen> & { _local?: boolean }
   premses: Premsa[]
   volUsat: number
