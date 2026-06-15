@@ -22,7 +22,7 @@ interface Props {
 }
 
 function EbullidorCard({ ebullidor, premses, volUsat, onDelete, onSave, compact }: {
-  console.log('EbullidorCard', { ebullidor, compact })
+  
   ebullidor: Partial<EbullidorAmbOrigen> & { _local?: boolean }
   premses: Premsa[]
   volUsat: number
@@ -30,6 +30,7 @@ function EbullidorCard({ ebullidor, premses, volUsat, onDelete, onSave, compact 
   onSave: (e: Partial<EbullidorAmbOrigen>) => void
   compact?: boolean
 }) {
+  console.log('EbullidorCard', { ebullidor, compact })
   const [editing, setEditing] = useState(!ebullidor.id)
   const [form, setForm] = useState(ebullidor)
   const [origens, setOrigens] = useState<{ premsa_id: number; vol_l: number }[]>(
