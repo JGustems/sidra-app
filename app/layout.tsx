@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import LogoutButton from '@/components/LogoutButton'
+import { colors } from '@/lib/theme'
 
 export const metadata: Metadata = {
   title: 'Sidra — Producció',
@@ -14,10 +15,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ca">
-      <body style={{ background: '#141412', minHeight: '100vh', margin: 0 }}>
+      <body style={{ background: colors.bg, minHeight: '100vh', margin: 0 }}>
         <header style={{
-          background: '#0e0d0c',
-          borderBottom: '0.5px solid #252422',
+          background: colors.bgHead,
+          borderBottom: `0.5px solid ${colors.border}`,
           padding: '10px 24px',
           display: 'flex',
           alignItems: 'center',
@@ -27,19 +28,19 @@ export default function RootLayout({
             fontFamily: 'Georgia, serif',
             fontStyle: 'italic',
             fontSize: '18px',
-            color: '#e8e4de',
+            color: colors.textHi,
             textDecoration: 'none',
           }}>
             Sidra
           </a>
-          <span style={{ fontSize: '11px', color: '#4a4846', fontFamily: 'DM Mono, monospace' }}>
+          <span style={{ fontSize: '11px', color: colors.text3, fontFamily: 'DM Mono, monospace' }}>
             producció
           </span>
           <nav style={{ marginLeft: 'auto', display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <a href="/" style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
+            <a href="/" style={{ fontSize: '11px', color: colors.text2, fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
               Jornades
             </a>
-            <a href="/configuracio" style={{ fontSize: '11px', color: '#5a5854', fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
+            <a href="/configuracio" style={{ fontSize: '11px', color: colors.text2, fontFamily: 'DM Mono, monospace', textDecoration: 'none' }}>
               Configuració
             </a>
             <LogoutButton />
