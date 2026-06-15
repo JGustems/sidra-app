@@ -59,7 +59,6 @@ export default function FaseCarousel({ data }: { data: unknown }) {
   const opacities = [0.35, 0.65, 1, 0.45, 0.3]
 
   return (
-    console.log('=== COMPROVANT DES DEL PARE ===', { FasePomes, FaseBullit });
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
       <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
