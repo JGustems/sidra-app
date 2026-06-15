@@ -1,69 +1,71 @@
 // ============================================================
 // TEMA GLOBAL — canvia aquí i s'aplica a tota la web
+// GitHub Dark Mode inspired
 // ============================================================
 
 export const colors = {
-  // Fons
-  bg:       '#0f1115',
-  bg2:      '#161a22',
-  bg3:      '#1d2330',
-  bgHead:   '#0b0d12',
+  // Fons (GitHub dark palette)
+  bg:       '#0d1117',
+  bg2:      '#161b22',
+  bg3:      '#21262d',
+  bgHead:   '#0d1117',
 
   // Bordes
-  border:   '#2a3140',
-  border2:  '#394255',
+  border:   '#30363d',
+  border2:  '#444c56',
 
-  // Text
-  text:     '#eef2f7',
-  text2:    '#b3bccb',
-  text3:    '#7f8a9d',
+  // Text (millor contrast)
+  text:     '#e6edf3',
+  text2:    '#8b949e',
+  text3:    '#6e7681',
   textHi:   '#ffffff',
 
-  // Accent ambre
-  amber:    '#d48a24',
-  amberHi:  '#ffb347',
-  amberBg:  '#2d1d08',
+  // Accent blau (GitHub primary)
+  amber:    '#58a6ff',
+  amberHi:  '#79c0ff',
+  amberBg:  '#0d2d4e',
 
-  // Accent teal
-  teal:     '#23b58f',
-  tealBg:   '#0b2a22',
+  // Accent verd (GitHub success)
+  teal:     '#3fb950',
+  tealBg:   '#0d3b23',
 
-  // Perill
-  danger:   '#ef5b5b',
+  // Perill (GitHub danger)
+  danger:   '#f85149',
 }
+
 export const S = {
   // Cards
-  card:        { background: colors.bg2, border: `0.5px solid ${colors.border}`, borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
-  cardEditing: { background: colors.bg2, border: `0.5px solid ${colors.amber}`, borderRadius: '8px', overflow: 'hidden' as const, marginBottom: '8px' },
-  cardHead:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderBottom: `0.5px solid ${colors.border}`, background: colors.bg },
-  cardFoot:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '7px 12px', borderTop: `0.5px solid ${colors.border}`, background: colors.bg },
-  cardId:      { fontSize: '11px', fontWeight: '500' as const, color: colors.text, background: colors.border, padding: '2px 8px', borderRadius: '4px' },
+  card:        { background: colors.bg2, border: `1px solid ${colors.border}`, borderRadius: '6px', overflow: 'hidden' as const, marginBottom: '8px' },
+  cardEditing: { background: colors.bg2, border: `1px solid ${colors.amber}`, borderRadius: '6px', overflow: 'hidden' as const, marginBottom: '8px' },
+  cardHead:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '12px 16px', borderBottom: `1px solid ${colors.border}`, background: colors.bg3 },
+  cardFoot:    { display: 'flex' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, padding: '12px 16px', borderTop: `1px solid ${colors.border}`, background: colors.bg3 },
+  cardId:      { fontSize: '11px', fontWeight: '500' as const, color: colors.text2, background: colors.bg3, padding: '4px 8px', borderRadius: '4px' },
 
   // Fields
-  fieldRow:    { display: 'flex' as const, alignItems: 'center' as const, padding: '7px 12px', borderBottom: `0.5px solid ${colors.bg3}` },
-  fieldLabel:  { fontSize: '9px', textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: colors.text3, width: '120px', flexShrink: 0 },
-  fieldValue:  { fontSize: '12px', color: colors.text, fontWeight: '500' as const },
-  fieldEmpty:  { fontSize: '11px', color: colors.border2, fontStyle: 'italic' as const },
-  fieldInput:  { fontFamily: 'DM Mono, monospace', fontSize: '12px', background: 'transparent', border: 'none', borderBottom: `1px solid ${colors.border2}`, color: colors.textHi, outline: 'none', flex: 1, padding: '1px 4px' },
-  fieldSelect: { fontFamily: 'DM Mono, monospace', fontSize: '12px', background: colors.bg2, border: 'none', borderBottom: `1px solid ${colors.border2}`, color: colors.textHi, outline: 'none', flex: 1, padding: '1px 4px' },
+  fieldRow:    { display: 'flex' as const, alignItems: 'center' as const, padding: '12px 16px', borderBottom: `1px solid ${colors.border}` },
+  fieldLabel:  { fontSize: '11px', textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: colors.text3, width: '120px', flexShrink: 0, fontWeight: '600' as const },
+  fieldValue:  { fontSize: '13px', color: colors.text, fontWeight: '400' as const },
+  fieldEmpty:  { fontSize: '12px', color: colors.text3, fontStyle: 'italic' as const },
+  fieldInput:  { fontFamily: 'DM Mono, monospace', fontSize: '13px', background: colors.bg, border: `1px solid ${colors.border2}`, borderRadius: '6px', color: colors.textHi, outline: 'none', padding: '8px 12px', transition: 'border-color 0.2s' },
+  fieldSelect: { fontFamily: 'DM Mono, monospace', fontSize: '13px', background: colors.bg2, border: `1px solid ${colors.border2}`, borderRadius: '6px', color: colors.textHi, outline: 'none', padding: '8px 12px', cursor: 'pointer', transition: 'border-color 0.2s' },
   autoField:   { fontSize: '11px', color: colors.text3, fontStyle: 'italic' as const },
 
   // Badges
-  badgeSaved:  { fontSize: '9px', background: colors.tealBg, color: colors.teal, padding: '2px 8px', borderRadius: '10px' },
-  badgeEdit:   { fontSize: '9px', background: colors.amberBg, color: colors.amberHi, padding: '2px 8px', borderRadius: '10px' },
-  lotBadge:    { fontSize: '10px', background: colors.amberBg, color: colors.amberHi, padding: '2px 8px', borderRadius: '4px', fontWeight: '500' as const },
+  badgeSaved:  { fontSize: '11px', background: colors.tealBg, color: colors.teal, padding: '4px 12px', borderRadius: '12px', fontWeight: '500' as const, border: `1px solid ${colors.teal}33` },
+  badgeEdit:   { fontSize: '11px', background: colors.amberBg, color: colors.amberHi, padding: '4px 12px', borderRadius: '12px', fontWeight: '500' as const, border: `1px solid ${colors.amber}33` },
+  lotBadge:    { fontSize: '11px', background: colors.amberBg, color: colors.amberHi, padding: '4px 10px', borderRadius: '4px', fontWeight: '600' as const, border: `1px solid ${colors.amber}33` },
 
   // Buttons
-  btnEdit:     { fontFamily: 'DM Mono, monospace', fontSize: '10px', padding: '3px 10px', borderRadius: '5px', border: `0.5px solid ${colors.border2}`, background: 'none', color: colors.text2, cursor: 'pointer' },
-  btnSave:     { fontFamily: 'DM Mono, monospace', fontSize: '10px', padding: '3px 14px', borderRadius: '5px', border: 'none', background: colors.amber, color: '#fff', cursor: 'pointer' },
-  btnCancel:   { fontFamily: 'DM Mono, monospace', fontSize: '10px', padding: '3px 10px', borderRadius: '5px', border: `0.5px solid ${colors.border}`, background: 'none', color: colors.text3, cursor: 'pointer' },
-  btnDel:      { fontFamily: 'DM Mono, monospace', fontSize: '10px', border: 'none', background: 'none', color: colors.text3, cursor: 'pointer' },
-  btnAdd:      { fontFamily: 'DM Mono, monospace', fontSize: '10px', color: colors.amber, background: 'none', border: 'none', cursor: 'pointer' },
+  btnEdit:     { fontFamily: 'DM Mono, monospace', fontSize: '11px', padding: '6px 12px', borderRadius: '6px', border: `1px solid ${colors.border2}`, background: 'transparent', color: colors.text, cursor: 'pointer', fontWeight: '500' as const, transition: 'all 0.2s', ':hover': { borderColor: colors.text2, background: colors.bg3 } },
+  btnSave:     { fontFamily: 'DM Mono, monospace', fontSize: '11px', padding: '6px 16px', borderRadius: '6px', border: 'none', background: colors.teal, color: '#fff', cursor: 'pointer', fontWeight: '600' as const, transition: 'all 0.2s', ':hover': { background: '#2ea043' } },
+  btnCancel:   { fontFamily: 'DM Mono, monospace', fontSize: '11px', padding: '6px 12px', borderRadius: '6px', border: `1px solid ${colors.border2}`, background: 'transparent', color: colors.text2, cursor: 'pointer', fontWeight: '500' as const, transition: 'all 0.2s', ':hover': { borderColor: colors.text3, background: colors.bg3 } },
+  btnDel:      { fontFamily: 'DM Mono, monospace', fontSize: '11px', border: 'none', background: 'none', color: colors.danger, cursor: 'pointer', fontWeight: '500' as const, transition: 'color 0.2s', ':hover': { color: '#f97583' } },
+  btnAdd:      { fontFamily: 'DM Mono, monospace', fontSize: '11px', color: colors.amber, background: 'none', border: 'none', cursor: 'pointer', fontWeight: '500' as const, transition: 'color 0.2s', ':hover': { color: colors.amberHi } },
 
   // Balance
-  balOk:       { fontSize: '10px', padding: '5px 10px', borderRadius: '5px', background: colors.tealBg, color: colors.teal, margin: '0 12px 8px' },
-  balWarn:     { fontSize: '10px', padding: '5px 10px', borderRadius: '5px', background: colors.amberBg, color: colors.amberHi, margin: '0 12px 8px' },
+  balOk:       { fontSize: '12px', padding: '8px 12px', borderRadius: '6px', background: colors.tealBg, color: colors.teal, margin: '0 16px 8px', border: `1px solid ${colors.teal}33`, fontWeight: '500' as const },
+  balWarn:     { fontSize: '12px', padding: '8px 12px', borderRadius: '6px', background: colors.amberBg, color: colors.amberHi, margin: '0 16px 8px', border: `1px solid ${colors.amber}33`, fontWeight: '500' as const },
 
   // Section
-  sectionHead: { fontSize: '9px', textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: colors.text3, marginBottom: '8px' },
+  sectionHead: { fontSize: '11px', textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: colors.text2, marginBottom: '12px', fontWeight: '600' as const },
 }
