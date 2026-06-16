@@ -46,8 +46,7 @@ export const S = {
   fieldLabel:  { fontSize: '11px', textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: colors.text3, width: '120px', flexShrink: 0, fontWeight: '600' as const },
   fieldValue:  { fontSize: '13px', color: colors.text, fontWeight: '400' as const },
   fieldEmpty:  { fontSize: '12px', color: colors.text3, fontStyle: 'italic' as const },
-  fieldInput:  { fontFamily: 'DM Mono, monospace', fontSize: '13px', background: colors.bg, border: `1px solid ${colors.border2}`, borderRadius: '6px', color: colors.textHi, outline: 'none', padding: '8px 12px', transition: 'border-color 0.2s' },
-  fieldSelect: { fontFamily: 'DM Mono, monospace', fontSize: '13px', background: colors.bg2, border: `1px solid ${colors.border2}`, borderRadius: '6px', color: colors.textHi, outline: 'none', padding: '8px 12px', cursor: 'pointer', transition: 'border-color 0.2s' },
+fieldInput: { fontFamily: 'DM Mono, monospace', fontSize: '13px', background: 'transparent', border: 'none', borderBottom: `1px solid ${colors.border2}`, borderRadius: '0', color: colors.textHi, outline: 'none', padding: '1px 4px', width: '100%', boxSizing: 'border-box' as const },  fieldSelect: { fontFamily: 'DM Mono, monospace', fontSize: '13px', background: colors.bg2, border: `1px solid ${colors.border2}`, borderRadius: '6px', color: colors.textHi, outline: 'none', padding: '8px 12px', cursor: 'pointer', transition: 'border-color 0.2s' },
   autoField:   { fontSize: '11px', color: colors.text3, fontStyle: 'italic' as const },
 
   // Badges
