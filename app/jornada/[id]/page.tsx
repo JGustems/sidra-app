@@ -51,7 +51,7 @@ export default async function JornadaPage({
     supabase.from('mails_autoritzats').select('*').eq('actiu', true).order('email'),
   ])
     
-  ])
+
 
   const jornadaData = {
     jornada,
