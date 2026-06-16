@@ -161,20 +161,24 @@ function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onMoveUp, o
   )
 }
 
-function EmbotellatCard({ fermentador, ampolles, taps, sucres, onSave, compact }: {
+function EmbotellatCard({ fermentador, ampolles, taps, sucres, mails, onSave, compact }: {
   fermentador: FermentadorAmbEmbotellat
   ampolles: TipusAmpolla[]
   taps: TipusTap[]
   sucres: TipusSucre[]
+  mails: { email: string }[]
   onSave: () => void
   compact?: boolean
-}) {
+}){
   const embotellat = fermentador.embotellat?.[0]
   const [editing, setEditing] = useState(!embotellat)
   const [dataEmb, setDataEmb] = useState(embotellat?.data_embotellat ?? '')
   const [sgMesura, setSgMesura] = useState<number | null>(embotellat?.sg_mesura ?? null)
   const [blocs, setBlocs] = useState<Partial<EmbotellAtBloc>[]>(embotellat?.embotellat_bloc ?? [])
   const [saving, setSaving] = useState(false)
+  const [destinataris, setDestinataris] = useState<string[]>([])
+const [enviant, setEnviant] = useState(false)
+const [enviatOk, setEnviatOk] = useState(false)
   const router = useRouter()
 
   const totalAmpolles = blocs.reduce((s, b) => s + (b.quantitat ?? 0), 0)
@@ -200,7 +204,33 @@ function EmbotellatCard({ fermentador, ampolles, taps, sucres, onSave, compact }
       sucre_g: null,
     }])
   }
+async function enviarEmail() {
+  if (destinataris.length === 0) return
+  setEnviant(true)
+  setEnviatOk(false)
 
+  const blocsEnviament = blocs.map((b, idx) => ({
+    num_inici: getNumInici(idx),
+    num_final: getNumInici(idx) + (b.quantitat ?? 0) - 1,
+    ampolla_codi: ampolles.find(a => a.id === b.ampolla_id)?.codi ?? '',
+    tap_codi: taps.find(t => t.id === b.tap_id)?.codi ?? '',
+    sucre_codi: sucres.find(s => s.id === b.sucre_id)?.codi ?? '',
+  }))
+
+  const res = await fetch('/api/enviar-niimbot', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      blocs: blocsEnviament,
+      lot: fermentador.lot ?? '',
+      dataEmb: dataEmb ? formatData(dataEmb) : '',
+      destinataris,
+    }),
+  })
+
+  setEnviant(false)
+  if (res.ok) setEnviatOk(true)
+}
   async function save() {
     setSaving(true)
 
@@ -329,15 +359,43 @@ function EmbotellatCard({ fermentador, ampolles, taps, sucres, onSave, compact }
           ⚠ {totalLitres.toFixed(2)} l embotellats superen els {volDisponible} l disponibles
         </div>
       )}
-      <div style={{ ...S.cardFoot, gap: '8px' }}>
-        <button style={S.btnDel} onClick={() => setEditing(true)}>editar</button>
-        <button
-          onClick={exportarCSV}
-          style={{ ...S.btnEdit, color: colors.teal, borderColor: colors.teal }}
-        >
-          ↓ Niimbot CSV
-        </button>
-      </div>
+      <div style={{ padding: '10px 12px', borderTop: `0.5px solid ${colors.border}` }}>
+  <div style={{ fontSize: '9px', color: colors.text3, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: '8px' }}>
+    Enviar per email
+  </div>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+    {mails.map(m => (
+      <label key={m.email} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: colors.text, cursor: 'pointer' }}>
+        <input
+          type="checkbox"
+          checked={destinataris.includes(m.email)}
+          onChange={e => setDestinataris(d =>
+            e.target.checked ? [...d, m.email] : d.filter(x => x !== m.email)
+          )}
+        />
+        {m.email}
+      </label>
+    ))}
+  </div>
+  {enviatOk && (
+    <div style={{ fontSize: '10px', color: colors.teal, marginBottom: '8px' }}>✓ Email enviat!</div>
+  )}
+  <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
+    <button style={S.btnDel} onClick={() => setEditing(true)}>editar</button>
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <button onClick={exportarCSV} style={{ ...S.btnEdit, color: colors.teal, borderColor: colors.teal }}>
+        ↓ CSV
+      </button>
+      <button
+        onClick={enviarEmail}
+        disabled={enviant || destinataris.length === 0}
+        style={{ ...S.btnSave, opacity: destinataris.length === 0 ? 0.4 : 1 }}
+      >
+        {enviant ? 'Enviant...' : '✉ Enviar'}
+      </button>
+    </div>
+  </div>
+</div>
     </Card>
   )
 
@@ -417,10 +475,11 @@ export default function FaseEmbotellat({ data, compact }: Props) {
         <div style={{ fontSize: '10px', color: colors.text3, padding: '8px 12px' }}>Cap embotellat</div>
       )}
       {data.fermentadors.map(f => (
-        <EmbotellatCard key={f.id} fermentador={f} compact
-          ampolles={data.tipusAmpolles} taps={data.tipusTaps} sucres={data.tipusSucres}
-          onSave={() => router.refresh()} />
-      ))}
+  <EmbotellatCard key={f.id} fermentador={f}
+    ampolles={data.tipusAmpolles} taps={data.tipusTaps} sucres={data.tipusSucres}
+    mails={data.mails ?? []}
+    onSave={() => router.refresh()} />
+))}
     </div>
   )
 
