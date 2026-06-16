@@ -16,6 +16,7 @@ export default async function JornadaPage({
 }: {
   params: { id: string }
 }) {
+  
   const { data, error } = await supabase
     .from('jornada')
     .select('*')
@@ -36,6 +37,7 @@ export default async function JornadaPage({
     { data: tipusAmpolles },
     { data: tipusTaps },
     { data: tipusSucres },
+     { data: mails },
   ] = await Promise.all([
     supabase.from('poma').select('*').eq('jornada_id', jornada.id).order('codi'),
     supabase.from('triturada').select('*, triturada_origen(*)').eq('jornada_id', jornada.id).order('codi'),
@@ -46,6 +48,9 @@ export default async function JornadaPage({
     supabase.from('tipus_ampolla').select('*').order('ordre'),
     supabase.from('tipus_tap').select('*').order('ordre'),
     supabase.from('tipus_sucre').select('*').order('ordre'),
+    supabase.from('mails_autoritzats').select('*').eq('actiu', true).order('email'),
+  ])
+    
   ])
 
   const jornadaData = {
@@ -59,6 +64,7 @@ export default async function JornadaPage({
     tipusAmpolles: tipusAmpolles ?? [],
     tipusTaps: tipusTaps ?? [],
     tipusSucres: tipusSucres ?? [],
+    mails: mails ?? [],
   }
 
   return (
