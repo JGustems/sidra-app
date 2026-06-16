@@ -17,6 +17,7 @@ interface Props {
     tipusAmpolles: TipusAmpolla[]
     tipusTaps: TipusTap[]
     tipusSucres: TipusSucre[]
+    mails: { email: string }[] // Correcció: afegit
   }
   compact?: boolean
 }
@@ -72,84 +73,39 @@ function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onMoveUp, o
 
   return (
     <div style={{ borderBottom: `0.5px solid ${colors.bg3}`, padding: '8px 12px' }}>
-      {/* Capçal del bloc: tag + ordre + eliminar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
         <span style={{ fontSize: '10px', color: colors.teal, fontWeight: '500' }}>
           {tag !== '—' ? tag : 'Bloc sense configurar'}
           {bloc.quantitat && ampolla ? ` · ${volL} l` : ''}
         </span>
         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-          <button
-            onClick={onMoveUp}
-            disabled={!canMoveUp}
-            style={{ ...S.btnDel, fontSize: '11px', opacity: canMoveUp ? 1 : 0.2 }}
-          >↑</button>
-          <button
-            onClick={onMoveDown}
-            disabled={!canMoveDown}
-            style={{ ...S.btnDel, fontSize: '11px', opacity: canMoveDown ? 1 : 0.2 }}
-          >↓</button>
-          <button
-            onClick={onDelete}
-            style={{ ...S.btnDel, fontSize: '11px', color: colors.danger }}
-            onMouseOver={e => (e.currentTarget.style.color = colors.danger)}
-          >✕ eliminar</button>
+          <button onClick={onMoveUp} disabled={!canMoveUp} style={{ ...S.btnDel, fontSize: '11px', opacity: canMoveUp ? 1 : 0.2 }}>↑</button>
+          <button onClick={onMoveDown} disabled={!canMoveDown} style={{ ...S.btnDel, fontSize: '11px', opacity: canMoveDown ? 1 : 0.2 }}>↓</button>
+          <button onClick={onDelete} style={{ ...S.btnDel, fontSize: '11px', color: colors.danger }} onMouseOver={e => (e.currentTarget.style.color = colors.danger)}>✕ eliminar</button>
         </div>
       </div>
 
-      {/* Selects en columna */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
-        <select
-          style={{ ...S.fieldSelect, fontSize: '11px' }}
-          value={bloc.ampolla_id ?? ''}
-          onChange={e => onUpdate({ ...bloc, ampolla_id: parseInt(e.target.value) || undefined })}
-        >
+        <select style={{ ...S.fieldSelect, fontSize: '11px' }} value={bloc.ampolla_id ?? ''} onChange={e => onUpdate({ ...bloc, ampolla_id: parseInt(e.target.value) || undefined })}>
           <option value="">— Ampolla —</option>
-          {ampolles.filter(a => a.actiu).map(a => (
-            <option key={a.id} value={a.id}>{a.codi} — {a.nom} ({a.mida_cl}cl)</option>
-          ))}
+          {ampolles.filter(a => a.actiu).map(a => (<option key={a.id} value={a.id}>{a.codi} — {a.nom} ({a.mida_cl}cl)</option>))}
         </select>
-        <select
-          style={{ ...S.fieldSelect, fontSize: '11px' }}
-          value={bloc.tap_id ?? ''}
-          onChange={e => onUpdate({ ...bloc, tap_id: parseInt(e.target.value) || undefined })}
-        >
+        <select style={{ ...S.fieldSelect, fontSize: '11px' }} value={bloc.tap_id ?? ''} onChange={e => onUpdate({ ...bloc, tap_id: parseInt(e.target.value) || undefined })}>
           <option value="">— Tap —</option>
-          {taps.filter(t => t.actiu).map(t => (
-            <option key={t.id} value={t.id}>{t.codi} — {t.nom}</option>
-          ))}
+          {taps.filter(t => t.actiu).map(t => (<option key={t.id} value={t.id}>{t.codi} — {t.nom}</option>))}
         </select>
-        <select
-          style={{ ...S.fieldSelect, fontSize: '11px' }}
-          value={bloc.sucre_id ?? ''}
-          onChange={e => onUpdate({ ...bloc, sucre_id: parseInt(e.target.value) || undefined })}
-        >
+        <select style={{ ...S.fieldSelect, fontSize: '11px' }} value={bloc.sucre_id ?? ''} onChange={e => onUpdate({ ...bloc, sucre_id: parseInt(e.target.value) || undefined })}>
           <option value="">— Sucre —</option>
-          {sucres.filter(s => s.actiu).map(s => (
-            <option key={s.id} value={s.id}>{s.codi} — {s.nom}</option>
-          ))}
+          {sucres.filter(s => s.actiu).map(s => (<option key={s.id} value={s.id}>{s.codi} — {s.nom}</option>))}
         </select>
       </div>
 
-      {/* Quantitat + info */}
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <input
-          style={{ ...S.fieldInput, width: '60px', flex: 'none' }}
-          type="number" min="1"
-          value={bloc.quantitat ?? ''}
-          placeholder="qty"
-          onChange={e => onUpdate({ ...bloc, quantitat: parseInt(e.target.value) || 0 })}
-        />
+        <input style={{ ...S.fieldInput, width: '60px', flex: 'none' }} type="number" min="1" value={bloc.quantitat ?? ''} placeholder="qty" onChange={e => onUpdate({ ...bloc, quantitat: parseInt(e.target.value) || 0 })} />
         <span style={{ fontSize: '10px', color: colors.text3 }}>ampolles</span>
         {bloc.sucre_id && sucres.find(s => s.id === bloc.sucre_id)?.quantitat_g != null && (
           <>
-            <input
-              style={{ ...S.fieldInput, width: '55px', flex: 'none' }}
-              type="number"
-              value={bloc.sucre_g ?? ''}
-              placeholder="g"
-              onChange={e => onUpdate({ ...bloc, sucre_g: parseInt(e.target.value) || null })}
-            />
+            <input style={{ ...S.fieldInput, width: '55px', flex: 'none' }} type="number" value={bloc.sucre_g ?? ''} placeholder="g" onChange={e => onUpdate({ ...bloc, sucre_g: parseInt(e.target.value) || null })} />
             <span style={{ fontSize: '10px', color: colors.text3 }}>g sucre</span>
           </>
         )}
@@ -161,15 +117,15 @@ function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onMoveUp, o
   )
 }
 
-function EmbotellatCard({ fermentador, ampolles, taps, sucres, mails, onSave, compact }: {
+function EmbotellatCard({ fermentador, ampolles, taps, sucres, mails = [], onSave, compact }: {
   fermentador: FermentadorAmbEmbotellat
   ampolles: TipusAmpolla[]
   taps: TipusTap[]
   sucres: TipusSucre[]
-  mails: { email: string }[]
+  mails?: { email: string }[]
   onSave: () => void
   compact?: boolean
-}){
+}) {
   const embotellat = fermentador.embotellat?.[0]
   const [editing, setEditing] = useState(!embotellat)
   const [dataEmb, setDataEmb] = useState(embotellat?.data_embotellat ?? '')
@@ -177,8 +133,8 @@ function EmbotellatCard({ fermentador, ampolles, taps, sucres, mails, onSave, co
   const [blocs, setBlocs] = useState<Partial<EmbotellAtBloc>[]>(embotellat?.embotellat_bloc ?? [])
   const [saving, setSaving] = useState(false)
   const [destinataris, setDestinataris] = useState<string[]>([])
-const [enviant, setEnviant] = useState(false)
-const [enviatOk, setEnviatOk] = useState(false)
+  const [enviant, setEnviant] = useState(false)
+  const [enviatOk, setEnviatOk] = useState(false)
   const router = useRouter()
 
   const totalAmpolles = blocs.reduce((s, b) => s + (b.quantitat ?? 0), 0)
@@ -196,102 +152,62 @@ const [enviatOk, setEnviatOk] = useState(false)
   }
 
   function addBloc() {
-    setBlocs(b => [...b, {
-      ampolla_id: ampolles[0]?.id,
-      tap_id: taps[0]?.id,
-      sucre_id: sucres[0]?.id,
-      quantitat: 0,
-      sucre_g: null,
-    }])
+    setBlocs(b => [...b, { ampolla_id: ampolles[0]?.id, tap_id: taps[0]?.id, sucre_id: sucres[0]?.id, quantitat: 0, sucre_g: null }])
   }
-async function enviarEmail() {
-  if (destinataris.length === 0) return
-  setEnviant(true)
-  setEnviatOk(false)
 
-  const blocsEnviament = blocs.map((b, idx) => ({
-    num_inici: getNumInici(idx),
-    num_final: getNumInici(idx) + (b.quantitat ?? 0) - 1,
-    ampolla_codi: ampolles.find(a => a.id === b.ampolla_id)?.codi ?? '',
-    tap_codi: taps.find(t => t.id === b.tap_id)?.codi ?? '',
-    sucre_codi: sucres.find(s => s.id === b.sucre_id)?.codi ?? '',
-  }))
+  async function enviarEmail() {
+    if (destinataris.length === 0) return
+    setEnviant(true)
+    setEnviatOk(false)
 
-  const res = await fetch('/api/enviar-niimbot', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      blocs: blocsEnviament,
-      lot: fermentador.lot ?? '',
-      dataEmb: dataEmb ? formatData(dataEmb) : '',
-      destinataris,
-    }),
-  })
+    const blocsEnviament = blocs.map((b, idx) => ({
+      num_inici: getNumInici(idx),
+      num_final: getNumInici(idx) + (b.quantitat ?? 0) - 1,
+      ampolla_codi: ampolles.find(a => a.id === b.ampolla_id)?.codi ?? '',
+      tap_codi: taps.find(t => t.id === b.tap_id)?.codi ?? '',
+      sucre_codi: sucres.find(s => s.id === b.sucre_id)?.codi ?? '',
+    }))
 
-  setEnviant(false)
-  if (res.ok) setEnviatOk(true)
-}
+    const res = await fetch('/api/enviar-niimbot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ blocs: blocsEnviament, lot: fermentador.lot ?? '', dataEmb: dataEmb ? formatData(dataEmb) : '', destinataris }),
+    })
+
+    setEnviant(false)
+    if (res.ok) setEnviatOk(true)
+  }
+
   async function save() {
     setSaving(true)
-
     const blocsCalculats = blocs.map((b, idx) => {
       const numInici = getNumInici(idx)
       const numFinal = numInici + (b.quantitat ?? 0) - 1
       const ampolla = ampolles.find(a => a.id === b.ampolla_id)
       const tap = taps.find(t => t.id === b.tap_id)
       const sucre = sucres.find(s => s.id === b.sucre_id)
-      return {
-        ...b,
-        num_inici: numInici,
-        num_final: numFinal,
-        codi_embotellat: `${ampolla?.codi ?? ''}.${tap?.codi ?? ''}.${sucre?.codi ?? ''}`,
-      }
+      return { ...b, num_inici: numInici, num_final: numFinal, codi_embotellat: `${ampolla?.codi ?? ''}.${tap?.codi ?? ''}.${sucre?.codi ?? ''}` }
     })
 
     let embotellatId = embotellat?.id
-
     if (embotellatId) {
-      await supabase.from('embotellat').update({
-        data_embotellat: dataEmb || null,
-        sg_mesura: sgMesura,
-        vol_disponible_l: volDisponible,
-      }).eq('id', embotellatId)
+      await supabase.from('embotellat').update({ data_embotellat: dataEmb || null, sg_mesura: sgMesura, vol_disponible_l: volDisponible }).eq('id', embotellatId)
       await supabase.from('embotellat_bloc').delete().eq('embotellat_id', embotellatId)
     } else {
-      const { data: nouEmb } = await supabase.from('embotellat').insert({
-        fermentador_id: fermentador.id,
-        data_embotellat: dataEmb || null,
-        sg_mesura: sgMesura,
-        vol_disponible_l: volDisponible,
-      }).select().single()
+      const { data: nouEmb } = await supabase.from('embotellat').insert({ fermentador_id: fermentador.id, data_embotellat: dataEmb || null, sg_mesura: sgMesura, vol_disponible_l: volDisponible }).select().single()
       embotellatId = nouEmb?.id
     }
 
     if (embotellatId && blocsCalculats.length > 0) {
-      await supabase.from('embotellat_bloc').insert(blocsCalculats.map(b => ({
-        embotellat_id: embotellatId!,
-        ampolla_id: b.ampolla_id!,
-        tap_id: b.tap_id!,
-        sucre_id: b.sucre_id!,
-        quantitat: b.quantitat!,
-        num_inici: b.num_inici!,
-        num_final: b.num_final!,
-        codi_embotellat: b.codi_embotellat,
-        sucre_g: b.sucre_g ?? null,
-      })))
+      await supabase.from('embotellat_bloc').insert(blocsCalculats.map(b => ({ embotellat_id: embotellatId!, ampolla_id: b.ampolla_id!, tap_id: b.tap_id!, sucre_id: b.sucre_id!, quantitat: b.quantitat!, num_inici: b.num_inici!, num_final: b.num_final!, codi_embotellat: b.codi_embotellat, sucre_g: b.sucre_g ?? null })))
     }
-
     setSaving(false)
     setEditing(false)
     onSave()
   }
 
   function exportarCSV() {
-    const blocsCalculats = blocs.map((b, idx) => ({
-      ...b,
-      num_inici: getNumInici(idx),
-      num_final: getNumInici(idx) + (b.quantitat ?? 0) - 1,
-    } as EmbotellAtBloc))
+    const blocsCalculats = blocs.map((b, idx) => ({ ...b, num_inici: getNumInici(idx), num_final: getNumInici(idx) + (b.quantitat ?? 0) - 1 } as EmbotellAtBloc))
     const csv = generaCSV(blocsCalculats, fermentador.lot ?? '', formatData(dataEmb), ampolles, taps, sucres)
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
@@ -307,11 +223,7 @@ async function enviarEmail() {
       id={fermentador.codi}
       badge={fermentador.lot ? `LOT ${fermentador.lot}` : undefined}
       badgeColor="amber"
-      fields={[
-        { label: 'Ampolles', value: totalAmpolles > 0 ? totalAmpolles : null },
-        { label: 'Vol',      value: totalLitres > 0 ? `${totalLitres.toFixed(2)} l` : null },
-        { label: 'Data',     value: dataEmb ? formatData(dataEmb) : null },
-      ]}
+      fields={[{ label: 'Ampolles', value: totalAmpolles > 0 ? totalAmpolles : null }, { label: 'Vol', value: totalLitres > 0 ? `${totalLitres.toFixed(2)} l` : null }, { label: 'Data', value: dataEmb ? formatData(dataEmb) : null }]}
     />
   )
 
@@ -328,10 +240,7 @@ async function enviarEmail() {
       <FieldRead label="SG mesura" value={sgMesura} />
       <FieldRead label="Vol disponible" value={volDisponible ? `${volDisponible} l` : null} />
       <FieldRead label="Total ampolles" value={totalAmpolles > 0 ? totalAmpolles : null} />
-      <FieldRead
-        label="Total litres"
-        value={totalLitres > 0 ? `${totalLitres.toFixed(2)} l` : null}
-      />
+      <FieldRead label="Total litres" value={totalLitres > 0 ? `${totalLitres.toFixed(2)} l` : null} />
       {blocs.length > 0 && (
         <div style={{ padding: '7px 12px', borderBottom: `0.5px solid ${colors.bg3}` }}>
           <div style={S.sectionHead}>Blocs</div>
@@ -354,48 +263,26 @@ async function enviarEmail() {
           })}
         </div>
       )}
-      {!balancOk && (
-        <div style={S.balWarn}>
-          ⚠ {totalLitres.toFixed(2)} l embotellats superen els {volDisponible} l disponibles
-        </div>
-      )}
+      {!balancOk && <div style={S.balWarn}>⚠ {totalLitres.toFixed(2)} l embotellats superen els {volDisponible} l disponibles</div>}
       <div style={{ padding: '10px 12px', borderTop: `0.5px solid ${colors.border}` }}>
-  <div style={{ fontSize: '9px', color: colors.text3, textTransform: 'uppercase' as const, letterSpacing: '0.06em', marginBottom: '8px' }}>
-    Enviar per email
-  </div>
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
-    {mails.map(m => (
-      <label key={m.email} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: colors.text, cursor: 'pointer' }}>
-        <input
-          type="checkbox"
-          checked={destinataris.includes(m.email)}
-          onChange={e => setDestinataris(d =>
-            e.target.checked ? [...d, m.email] : d.filter(x => x !== m.email)
-          )}
-        />
-        {m.email}
-      </label>
-    ))}
-  </div>
-  {enviatOk && (
-    <div style={{ fontSize: '10px', color: colors.teal, marginBottom: '8px' }}>✓ Email enviat!</div>
-  )}
-  <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-    <button style={S.btnDel} onClick={() => setEditing(true)}>editar</button>
-    <div style={{ display: 'flex', gap: '8px' }}>
-      <button onClick={exportarCSV} style={{ ...S.btnEdit, color: colors.teal, borderColor: colors.teal }}>
-        ↓ CSV
-      </button>
-      <button
-        onClick={enviarEmail}
-        disabled={enviant || destinataris.length === 0}
-        style={{ ...S.btnSave, opacity: destinataris.length === 0 ? 0.4 : 1 }}
-      >
-        {enviant ? 'Enviant...' : '✉ Enviar'}
-      </button>
-    </div>
-  </div>
-</div>
+        <div style={{ fontSize: '9px', color: colors.text3, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>Enviar per email</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+          {mails.map(m => (
+            <label key={m.email} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: colors.text, cursor: 'pointer' }}>
+              <input type="checkbox" checked={destinataris.includes(m.email)} onChange={e => setDestinataris(d => e.target.checked ? [...d, m.email] : d.filter(x => x !== m.email))} />
+              {m.email}
+            </label>
+          ))}
+        </div>
+        {enviatOk && <div style={{ fontSize: '10px', color: colors.teal, marginBottom: '8px' }}>✓ Email enviat!</div>}
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
+          <button style={S.btnDel} onClick={() => setEditing(true)}>editar</button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={exportarCSV} style={{ ...S.btnEdit, color: colors.teal, borderColor: colors.teal }}>↓ CSV</button>
+            <button onClick={enviarEmail} disabled={enviant || destinataris.length === 0} style={{ ...S.btnSave, opacity: destinataris.length === 0 ? 0.4 : 1 }}>{enviant ? 'Enviant...' : '✉ Enviar'}</button>
+          </div>
+        </div>
+      </div>
     </Card>
   )
 
@@ -408,60 +295,24 @@ async function enviarEmail() {
         </div>
         <span style={S.badgeEdit}>editant</span>
       </div>
-      <FieldInput label="Data embotellat" value={dataEmb} type="date"
-        onChange={v => setDataEmb(v as string ?? '')} />
-      <FieldInput label="SG mesura" value={sgMesura} type="number" step="0.001"
-        onChange={v => setSgMesura(v as number)} />
+      <FieldInput label="Data embotellat" value={dataEmb} type="date" onChange={v => setDataEmb(v as string ?? '')} />
+      <FieldInput label="SG mesura" value={sgMesura} type="number" step="0.001" onChange={v => setSgMesura(v as number)} />
       <FieldAuto label="Vol disponible" value={volDisponible ? `${volDisponible} l` : null} />
 
       <div style={{ padding: '8px 12px', borderBottom: `0.5px solid ${colors.bg3}` }}>
         <div style={S.sectionHead}>Blocs d'ampolles</div>
         {blocs.map((b, idx) => (
-  <BlocRow
-    key={idx}
-    bloc={b}
-    ampolles={ampolles}
-    taps={taps}
-    sucres={sucres}
-    numInici={getNumInici(idx)}
-    onDelete={() => setBlocs(bs => bs.filter((_, i) => i !== idx))}
-    onMoveUp={() => setBlocs(bs => {
-      const nou = [...bs]
-      ;[nou[idx - 1], nou[idx]] = [nou[idx], nou[idx - 1]]
-      return nou
-    })}
-    onMoveDown={() => setBlocs(bs => {
-      const nou = [...bs]
-      ;[nou[idx], nou[idx + 1]] = [nou[idx + 1], nou[idx]]
-      return nou
-    })}
-    canMoveUp={idx > 0}
-    canMoveDown={idx < blocs.length - 1}
-    onUpdate={nb => setBlocs(bs => bs.map((item, i) => i === idx ? nb : item))}
-  />
-))}
+          <BlocRow key={idx} bloc={b} ampolles={ampolles} taps={taps} sucres={sucres} numInici={getNumInici(idx)} onDelete={() => setBlocs(bs => bs.filter((_, i) => i !== idx))} onMoveUp={() => setBlocs(bs => { const nou = [...bs]; [nou[idx - 1], nou[idx]] = [nou[idx], nou[idx - 1]]; return nou })} onMoveDown={() => setBlocs(bs => { const nou = [...bs]; [nou[idx], nou[idx + 1]] = [nou[idx], nou[idx + 1]]; return nou })} canMoveUp={idx > 0} canMoveDown={idx < blocs.length - 1} onUpdate={nb => setBlocs(bs => bs.map((item, i) => i === idx ? nb : item))} />
+        ))}
         <button onClick={addBloc} style={{ ...S.btnAdd, marginTop: '8px' }}>+ Afegir bloc</button>
       </div>
 
       <div style={{ padding: '8px 12px', borderBottom: `0.5px solid ${colors.bg3}` }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-          <span style={{ color: colors.text3 }}>Total ampolles:</span>
-          <span style={{ color: colors.text, fontWeight: '500' }}>{totalAmpolles}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '4px' }}>
-          <span style={{ color: colors.text3 }}>Total litres:</span>
-          <span style={{ color: balancOk ? colors.teal : colors.amberHi, fontWeight: '500' }}>
-            {totalLitres.toFixed(2)} l de {volDisponible} l disponibles
-          </span>
-        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}><span style={{ color: colors.text3 }}>Total ampolles:</span><span style={{ color: colors.text, fontWeight: '500' }}>{totalAmpolles}</span></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '4px' }}><span style={{ color: colors.text3 }}>Total litres:</span><span style={{ color: balancOk ? colors.teal : colors.amberHi, fontWeight: '500' }}>{totalLitres.toFixed(2)} l de {volDisponible} l disponibles</span></div>
       </div>
 
-      <CardFootEdit
-        onSave={save}
-        onCancel={() => { setEditing(false); setBlocs(embotellat?.embotellat_bloc ?? []) }}
-        onDelete={() => {}}
-        saving={saving}
-      />
+      <CardFootEdit onSave={save} onCancel={() => { setEditing(false); setBlocs(embotellat?.embotellat_bloc ?? []) }} onDelete={() => {}} saving={saving} />
     </Card>
   )
 }
@@ -471,34 +322,31 @@ export default function FaseEmbotellat({ data, compact }: Props) {
 
   if (compact) return (
     <div>
-      {data.fermentadors.length === 0 && (
-        <div style={{ fontSize: '10px', color: colors.text3, padding: '8px 12px' }}>Cap embotellat</div>
-      )}
+      {data.fermentadors.length === 0 && <div style={{ fontSize: '10px', color: colors.text3, padding: '8px 12px' }}>Cap embotellat</div>}
       {data.fermentadors.map(f => (
-  <EmbotellatCard key={f.id} fermentador={f}
-    ampolles={data.tipusAmpolles} taps={data.tipusTaps} sucres={data.tipusSucres}
-    mails={data.mails ?? []}
-    onSave={() => router.refresh()} />
-))}
+        <EmbotellatCard key={f.id} fermentador={f} ampolles={data.tipusAmpolles} taps={data.tipusTaps} sucres={data.tipusSucres} mails={data.mails ?? []} onSave={() => router.refresh()} />
+      ))}
     </div>
   )
 
   return (
     <div style={{ maxWidth: '500px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <span style={{ fontSize: '9px', color: colors.text3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          Embotellat per lot
-        </span>
+        <span style={{ fontSize: '9px', color: colors.text3, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Embotellat per lot</span>
       </div>
       {data.fermentadors.length === 0 && (
-        <div style={{ border: `0.5px dashed ${colors.border}`, borderRadius: '8px', padding: '32px', textAlign: 'center', color: colors.text3, fontSize: '12px' }}>
-          Primer afegeix fermentadors
-        </div>
+        <div style={{ border: `0.5px dashed ${colors.border}`, borderRadius: '8px', padding: '32px', textAlign: 'center', color: colors.text3, fontSize: '12px' }}>Primer afegeix fermentadors</div>
       )}
       {data.fermentadors.map(f => (
-        <EmbotellatCard key={f.id} fermentador={f}
-          ampolles={data.tipusAmpolles} taps={data.tipusTaps} sucres={data.tipusSucres}
-          onSave={() => router.refresh()} />
+        <EmbotellatCard 
+          key={f.id} 
+          fermentador={f} 
+          ampolles={data.tipusAmpolles} 
+          taps={data.tipusTaps} 
+          sucres={data.tipusSucres} 
+          mails={data.mails} // Correcció: afegit
+          onSave={() => router.refresh()} 
+        />
       ))}
     </div>
   )
