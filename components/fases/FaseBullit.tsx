@@ -6,9 +6,7 @@ import { supabase } from '@/lib/supabase'
 import type { Ebullidor, EbullidorOrigen, SucDirecte, SucDirecteOrigen, Premsa } from '@/lib/types'
 import { S, colors } from '@/lib/theme'
 import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
-console.log("Comprovant imports de Card:", { 
-  Card, CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact 
-})
+
 type EbullidorAmbOrigen = Ebullidor & { ebullidor_origen: EbullidorOrigen[] }
 type SucDirecteAmbOrigen = SucDirecte & { suc_directe_origen: SucDirecteOrigen[] }
 
@@ -24,7 +22,6 @@ interface Props {
 }
 
 function EbullidorCard({ ebullidor, premses, volUsat, onDelete, onSave, compact }: {
-  
   ebullidor: Partial<EbullidorAmbOrigen> & { _local?: boolean }
   premses: Premsa[]
   volUsat: number
@@ -32,11 +29,10 @@ function EbullidorCard({ ebullidor, premses, volUsat, onDelete, onSave, compact 
   onSave: (e: Partial<EbullidorAmbOrigen>) => void
   compact?: boolean
 }) {
-  console.log('EbullidorCard', { ebullidor, compact })
   const [editing, setEditing] = useState(!ebullidor.id)
   const [form, setForm] = useState(ebullidor)
   const [origens, setOrigens] = useState<{ premsa_id: number; vol_l: number }[]>(
-    ebullidor.ebullidor_origen?.map(o => ({ premsa_id: o.premsa_id, vol_l: o.vol_l })) ?? []
+    (ebullidor.ebullidor_origen ?? []).map(o => ({ premsa_id: o.premsa_id, vol_l: o.vol_l }))
   )
   const [saving, setSaving] = useState(false)
 
@@ -157,7 +153,7 @@ function SucDirecteCard({ suc, premses, volUsat, onDelete, onSave, compact }: {
   const [editing, setEditing] = useState(!suc.id)
   const [form, setForm] = useState(suc)
   const [origens, setOrigens] = useState<{ premsa_id: number; vol_l: number }[]>(
-    suc.suc_directe_origen?.map(o => ({ premsa_id: o.premsa_id, vol_l: o.vol_l })) ?? []
+    (suc.suc_directe_origen ?? []).map(o => ({ premsa_id: o.premsa_id, vol_l: o.vol_l }))
   )
   const [saving, setSaving] = useState(false)
 
@@ -247,19 +243,19 @@ function SucDirecteCard({ suc, premses, volUsat, onDelete, onSave, compact }: {
 
 export default function FaseBullit({ data, compact }: Props) {
   const router = useRouter()
-  const [ebullidors, setEbullidors] = useState<(Partial<EbullidorAmbOrigen> & { _local?: boolean })[]>(data.ebullidors)
-  const [sucsDirectes, setSucsDirectes] = useState<(Partial<SucDirecteAmbOrigen> & { _local?: boolean })[]>(data.sucsDirectes)
+  const [ebullidors, setEbullidors] = useState<(Partial<EbullidorAmbOrigen> & { _local?: boolean })[]>(data.ebullidors ?? [])
+  const [sucsDirectes, setSucsDirectes] = useState<(Partial<SucDirecteAmbOrigen> & { _local?: boolean })[]>(data.sucsDirectes ?? [])
 
   function getVolUsatEbullidor(id: number | undefined) {
     if (!id) return 0
-    return data.fermentadors.reduce((sum, f) =>
-      sum + f.fermentador_origen.filter(o => o.ebullidor_id === id).reduce((s, o) => s + (o.vol_l || 0), 0), 0)
+    return (data.fermentadors ?? []).reduce((sum, f) =>
+      sum + (f.fermentador_origen ?? []).filter(o => o.ebullidor_id === id).reduce((s, o) => s + (o.vol_l || 0), 0), 0)
   }
 
   function getVolUsatSucDirecte(id: number | undefined) {
     if (!id) return 0
-    return data.fermentadors.reduce((sum, f) =>
-      sum + f.fermentador_origen.filter(o => o.suc_directe_id === id).reduce((s, o) => s + (o.vol_l || 0), 0), 0)
+    return (data.fermentadors ?? []).reduce((sum, f) =>
+      sum + (f.fermentador_origen ?? []).filter(o => o.suc_directe_id === id).reduce((s, o) => s + (o.vol_l || 0), 0), 0)
   }
 
   async function saveEbullidor(idx: number, form: Partial<EbullidorAmbOrigen>) {
