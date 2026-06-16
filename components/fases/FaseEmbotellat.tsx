@@ -50,13 +50,17 @@ function generaCSV(blocs: EmbotellAtBloc[], lot: string, data: string, ampolles:
   return files.join('\n')
 }
 
-function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onUpdate }: {
+function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onMoveUp, onMoveDown, canMoveUp, canMoveDown, onUpdate }: {
   bloc: Partial<EmbotellAtBloc> & { _local?: boolean }
   ampolles: TipusAmpolla[]
   taps: TipusTap[]
   sucres: TipusSucre[]
   numInici: number
   onDelete: () => void
+  onMoveUp: () => void
+  onMoveDown: () => void
+  canMoveUp: boolean
+  canMoveDown: boolean
   onUpdate: (b: Partial<EmbotellAtBloc>) => void
 }) {
   const ampolla = ampolles.find(a => a.id === bloc.ampolla_id)
@@ -68,41 +72,66 @@ function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onUpdate }:
 
   return (
     <div style={{ borderBottom: `0.5px solid ${colors.bg3}`, padding: '8px 12px' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '6px' }}>
-  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-    <select
-      style={{ ...S.fieldSelect, flex: 1, fontSize: '11px' }}
-      value={bloc.ampolla_id ?? ''}
-      onChange={e => onUpdate({ ...bloc, ampolla_id: parseInt(e.target.value) || undefined })}
-    >
-      <option value="">Ampolla</option>
-      {ampolles.filter(a => a.actiu).map(a => (
-        <option key={a.id} value={a.id}>{a.codi} — {a.nom} ({a.mida_cl}cl)</option>
-      ))}
-    </select>
-    <button onClick={onDelete} style={{ ...S.btnDel, fontSize: '12px', flexShrink: 0 }}>✕</button>
-  </div>
-  <select
-    style={{ ...S.fieldSelect, fontSize: '11px' }}
-    value={bloc.tap_id ?? ''}
-    onChange={e => onUpdate({ ...bloc, tap_id: parseInt(e.target.value) || undefined })}
-  >
-    <option value="">Tap</option>
-    {taps.filter(t => t.actiu).map(t => (
-      <option key={t.id} value={t.id}>{t.codi} — {t.nom}</option>
-    ))}
-  </select>
-  <select
-    style={{ ...S.fieldSelect, fontSize: '11px' }}
-    value={bloc.sucre_id ?? ''}
-    onChange={e => onUpdate({ ...bloc, sucre_id: parseInt(e.target.value) || undefined })}
-  >
-    <option value="">Sucre</option>
-    {sucres.filter(s => s.actiu).map(s => (
-      <option key={s.id} value={s.id}>{s.codi} — {s.nom}</option>
-    ))}
-  </select>
-</div>
+      {/* Capçal del bloc: tag + ordre + eliminar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+        <span style={{ fontSize: '10px', color: colors.teal, fontWeight: '500' }}>
+          {tag !== '—' ? tag : 'Bloc sense configurar'}
+          {bloc.quantitat && ampolla ? ` · ${volL} l` : ''}
+        </span>
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <button
+            onClick={onMoveUp}
+            disabled={!canMoveUp}
+            style={{ ...S.btnDel, fontSize: '11px', opacity: canMoveUp ? 1 : 0.2 }}
+          >↑</button>
+          <button
+            onClick={onMoveDown}
+            disabled={!canMoveDown}
+            style={{ ...S.btnDel, fontSize: '11px', opacity: canMoveDown ? 1 : 0.2 }}
+          >↓</button>
+          <button
+            onClick={onDelete}
+            style={{ ...S.btnDel, fontSize: '11px', color: colors.danger }}
+            onMouseOver={e => (e.currentTarget.style.color = colors.danger)}
+          >✕ eliminar</button>
+        </div>
+      </div>
+
+      {/* Selects en columna */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+        <select
+          style={{ ...S.fieldSelect, fontSize: '11px' }}
+          value={bloc.ampolla_id ?? ''}
+          onChange={e => onUpdate({ ...bloc, ampolla_id: parseInt(e.target.value) || undefined })}
+        >
+          <option value="">— Ampolla —</option>
+          {ampolles.filter(a => a.actiu).map(a => (
+            <option key={a.id} value={a.id}>{a.codi} — {a.nom} ({a.mida_cl}cl)</option>
+          ))}
+        </select>
+        <select
+          style={{ ...S.fieldSelect, fontSize: '11px' }}
+          value={bloc.tap_id ?? ''}
+          onChange={e => onUpdate({ ...bloc, tap_id: parseInt(e.target.value) || undefined })}
+        >
+          <option value="">— Tap —</option>
+          {taps.filter(t => t.actiu).map(t => (
+            <option key={t.id} value={t.id}>{t.codi} — {t.nom}</option>
+          ))}
+        </select>
+        <select
+          style={{ ...S.fieldSelect, fontSize: '11px' }}
+          value={bloc.sucre_id ?? ''}
+          onChange={e => onUpdate({ ...bloc, sucre_id: parseInt(e.target.value) || undefined })}
+        >
+          <option value="">— Sucre —</option>
+          {sucres.filter(s => s.actiu).map(s => (
+            <option key={s.id} value={s.id}>{s.codi} — {s.nom}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Quantitat + info */}
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <input
           style={{ ...S.fieldInput, width: '60px', flex: 'none' }}
@@ -118,17 +147,14 @@ function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onUpdate }:
               style={{ ...S.fieldInput, width: '55px', flex: 'none' }}
               type="number"
               value={bloc.sucre_g ?? ''}
-              placeholder="g sucre"
+              placeholder="g"
               onChange={e => onUpdate({ ...bloc, sucre_g: parseInt(e.target.value) || null })}
             />
             <span style={{ fontSize: '10px', color: colors.text3 }}>g sucre</span>
           </>
         )}
-        <span style={{ fontSize: '10px', color: colors.text2, marginLeft: '8px' }}>
+        <span style={{ fontSize: '10px', color: colors.text2, marginLeft: 'auto' }}>
           {bloc.quantitat ? `${String(numInici).padStart(3, '0')} → ${String(numFinal).padStart(3, '0')}` : '—'}
-        </span>
-        <span style={{ fontSize: '10px', color: colors.teal, marginLeft: 'auto', fontWeight: '500' }}>
-          {tag !== '—' ? tag : ''}{bloc.quantitat && ampolla ? ` · ${volL} l` : ''}
         </span>
       </div>
     </div>
@@ -333,17 +359,29 @@ function EmbotellatCard({ fermentador, ampolles, taps, sucres, onSave, compact }
       <div style={{ padding: '8px 12px', borderBottom: `0.5px solid ${colors.bg3}` }}>
         <div style={S.sectionHead}>Blocs d'ampolles</div>
         {blocs.map((b, idx) => (
-          <BlocRow
-            key={idx}
-            bloc={b}
-            ampolles={ampolles}
-            taps={taps}
-            sucres={sucres}
-            numInici={getNumInici(idx)}
-            onDelete={() => setBlocs(bs => bs.filter((_, i) => i !== idx))}
-            onUpdate={nb => setBlocs(bs => bs.map((item, i) => i === idx ? nb : item))}
-          />
-        ))}
+  <BlocRow
+    key={idx}
+    bloc={b}
+    ampolles={ampolles}
+    taps={taps}
+    sucres={sucres}
+    numInici={getNumInici(idx)}
+    onDelete={() => setBlocs(bs => bs.filter((_, i) => i !== idx))}
+    onMoveUp={() => setBlocs(bs => {
+      const nou = [...bs]
+      ;[nou[idx - 1], nou[idx]] = [nou[idx], nou[idx - 1]]
+      return nou
+    })}
+    onMoveDown={() => setBlocs(bs => {
+      const nou = [...bs]
+      ;[nou[idx], nou[idx + 1]] = [nou[idx + 1], nou[idx]]
+      return nou
+    })}
+    canMoveUp={idx > 0}
+    canMoveDown={idx < blocs.length - 1}
+    onUpdate={nb => setBlocs(bs => bs.map((item, i) => i === idx ? nb : item))}
+  />
+))}
         <button onClick={addBloc} style={{ ...S.btnAdd, marginTop: '8px' }}>+ Afegir bloc</button>
       </div>
 
