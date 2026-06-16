@@ -68,39 +68,41 @@ function BlocRow({ bloc, ampolles, taps, sucres, numInici, onDelete, onUpdate }:
 
   return (
     <div style={{ borderBottom: `0.5px solid ${colors.bg3}`, padding: '8px 12px' }}>
-      <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '6px' }}>
-        <select
-          style={{ ...S.fieldSelect, flex: 1, fontSize: '11px' }}
-          value={bloc.ampolla_id ?? ''}
-          onChange={e => onUpdate({ ...bloc, ampolla_id: parseInt(e.target.value) || undefined })}
-        >
-          <option value="">Ampolla</option>
-          {ampolles.filter(a => a.actiu).map(a => (
-            <option key={a.id} value={a.id}>{a.codi} — {a.nom} ({a.mida_cl}cl)</option>
-          ))}
-        </select>
-        <select
-          style={{ ...S.fieldSelect, flex: 1, fontSize: '11px' }}
-          value={bloc.tap_id ?? ''}
-          onChange={e => onUpdate({ ...bloc, tap_id: parseInt(e.target.value) || undefined })}
-        >
-          <option value="">Tap</option>
-          {taps.filter(t => t.actiu).map(t => (
-            <option key={t.id} value={t.id}>{t.codi} — {t.nom}</option>
-          ))}
-        </select>
-        <select
-          style={{ ...S.fieldSelect, flex: 1, fontSize: '11px' }}
-          value={bloc.sucre_id ?? ''}
-          onChange={e => onUpdate({ ...bloc, sucre_id: parseInt(e.target.value) || undefined })}
-        >
-          <option value="">Sucre</option>
-          {sucres.filter(s => s.actiu).map(s => (
-            <option key={s.id} value={s.id}>{s.codi} — {s.nom}</option>
-          ))}
-        </select>
-        <button onClick={onDelete} style={{ ...S.btnDel, fontSize: '12px', flexShrink: 0 }}>✕</button>
-      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '6px' }}>
+  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+    <select
+      style={{ ...S.fieldSelect, flex: 1, fontSize: '11px' }}
+      value={bloc.ampolla_id ?? ''}
+      onChange={e => onUpdate({ ...bloc, ampolla_id: parseInt(e.target.value) || undefined })}
+    >
+      <option value="">Ampolla</option>
+      {ampolles.filter(a => a.actiu).map(a => (
+        <option key={a.id} value={a.id}>{a.codi} — {a.nom} ({a.mida_cl}cl)</option>
+      ))}
+    </select>
+    <button onClick={onDelete} style={{ ...S.btnDel, fontSize: '12px', flexShrink: 0 }}>✕</button>
+  </div>
+  <select
+    style={{ ...S.fieldSelect, fontSize: '11px' }}
+    value={bloc.tap_id ?? ''}
+    onChange={e => onUpdate({ ...bloc, tap_id: parseInt(e.target.value) || undefined })}
+  >
+    <option value="">Tap</option>
+    {taps.filter(t => t.actiu).map(t => (
+      <option key={t.id} value={t.id}>{t.codi} — {t.nom}</option>
+    ))}
+  </select>
+  <select
+    style={{ ...S.fieldSelect, fontSize: '11px' }}
+    value={bloc.sucre_id ?? ''}
+    onChange={e => onUpdate({ ...bloc, sucre_id: parseInt(e.target.value) || undefined })}
+  >
+    <option value="">Sucre</option>
+    {sucres.filter(s => s.actiu).map(s => (
+      <option key={s.id} value={s.id}>{s.codi} — {s.nom}</option>
+    ))}
+  </select>
+</div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <input
           style={{ ...S.fieldInput, width: '60px', flex: 'none' }}
