@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Poma, TritaradaOrigen } from '@/lib/types'
 import { S, colors } from '@/lib/theme'
+import { deleteAmbAvis } from '@/lib/supabase'
+
 import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldSelect, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
 
 interface Props {
@@ -128,10 +130,14 @@ export default function FasePomes({ data, compact }: Props) {
   }
 
   async function deletePoma(idx: number) {
-    const poma = pomes[idx]
-    if (poma.id) { await supabase.from('poma').delete().eq('id', poma.id); router.refresh() }
-    setPomes(p => p.filter((_, i) => i !== idx))
+  const poma = pomes[idx]
+  if (poma.id) {
+    const ok = await deleteAmbAvis('poma', poma.id, 'Aquesta poma ja s\'ha usat en una triturada i no es pot eliminar.')
+    if (!ok) return
+    router.refresh()
   }
+  setPomes(p => p.filter((_, i) => i !== idx))
+}
 
   if (compact) return (
     <div>
