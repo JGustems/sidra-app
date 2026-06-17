@@ -178,3 +178,7 @@ export interface EbullidorOrigen {
 export interface SucDirecte {
   id: number
   jornada_id:
+
+
+
+  
