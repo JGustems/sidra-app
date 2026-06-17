@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import LogoutButton from '@/components/LogoutButton'
+import { EditProvider } from '@/lib/EditContext'
 import { colors } from '@/lib/theme'
 
 export const metadata: Metadata = {
@@ -47,7 +48,9 @@ export default function RootLayout({
           </nav>
         </header>
         <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
-          {children}
+          <EditProvider>
+            {children}
+          </EditProvider>
         </main>
       </body>
     </html>
