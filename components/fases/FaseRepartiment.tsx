@@ -1,73 +1,82 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { S, colors } from '@/lib/theme'
 import Card, { CardHead, CardCompact } from '@/components/ui/Card'
-import type { Fermentador, Embotellat, EmbotellAtBloc, TipusAmpolla } from '@/lib/types'
+import type { Fermentador, Embotellat, EmbotellAtBloc, TipusAmpolla, TipusTap, TipusSucre } from '@/lib/types'
 
 interface Repartiment {
   id: number
-  embotellat_id: number
+  embotellat_bloc_id: number
   persona: string
-  ampolla_id: number
   quantitat: number
 }
 
-type EmbotellatAmbTot = Embotellat & {
-  embotellat_bloc: EmbotellAtBloc[]
-  repartiment: Repartiment[]
-}
+type EmbotellAtBlocAmbRepartiment = EmbotellAtBloc & { repartiment: Repartiment[] }
+type EmbotellatAmbTot = Embotellat & { embotellat_bloc: EmbotellAtBlocAmbRepartiment[] }
 type FermentadorAmbTot = Fermentador & { embotellat: EmbotellatAmbTot[] }
 
 interface Props {
   data: {
     fermentadors: FermentadorAmbTot[]
     tipusAmpolles: TipusAmpolla[]
+    tipusTaps: TipusTap[]
+    tipusSucres: TipusSucre[]
   }
   compact?: boolean
 }
 
-function RepartimentLot({ fermentador, ampolles }: {
+function nomBloc(bloc: EmbotellAtBloc, ampolles: TipusAmpolla[], taps: TipusTap[], sucres: TipusSucre[]) {
+  const ampolla = ampolles.find(a => a.id === bloc.ampolla_id)
+  const tap = taps.find(t => t.id === bloc.tap_id)
+  const sucre = sucres.find(s => s.id === bloc.sucre_id)
+  return `${ampolla?.nom ?? '?'} · ${tap?.nom ?? '?'} · ${sucre?.nom ?? '?'}`
+}
+
+function RepartimentLot({ fermentador, ampolles, taps, sucres }: {
   fermentador: FermentadorAmbTot
   ampolles: TipusAmpolla[]
+  taps: TipusTap[]
+  sucres: TipusSucre[]
 }) {
   const embotellat = fermentador.embotellat?.[0]
   const blocs = embotellat?.embotellat_bloc ?? []
-  const [repartiments, setRepartiments] = useState<Partial<Repartiment>[]>(embotellat?.repartiment ?? [])
+  const [repartiments, setRepartiments] = useState<Partial<Repartiment>[]>(
+    blocs.flatMap(b => b.repartiment ?? [])
+  )
   const [saving, setSaving] = useState(false)
 
-  // Total disponible per cada ampolla_id (suma dels blocs amb aquest tipus)
-  const disponiblePerAmpolla = new Map<number, number>()
-  blocs.forEach(b => {
-    disponiblePerAmpolla.set(b.ampolla_id, (disponiblePerAmpolla.get(b.ampolla_id) ?? 0) + b.quantitat)
-  })
-
-  // Total ja repartit per cada ampolla_id
-  function repartitPerAmpolla(ampollaId: number) {
+  function repartitPerBloc(blocId: number) {
     return repartiments
-      .filter(r => r.ampolla_id === ampollaId)
+      .filter(r => r.embotellat_bloc_id === blocId)
       .reduce((s, r) => s + (r.quantitat ?? 0), 0)
   }
 
-  // Persones úniques
   const persones = Array.from(new Set(repartiments.map(r => r.persona).filter(Boolean))) as string[]
+
   function litresPersona(persona: string): number {
-  return repartiments
-    .filter(r => r.persona === persona)
-    .reduce((sum, r) => {
-      const ampolla = ampolles.find(a => a.id === r.ampolla_id)
-      return sum + ((r.quantitat ?? 0) * (ampolla?.mida_cl ?? 0) / 100)
-    }, 0)
-}
+    return repartiments
+      .filter(r => r.persona === persona)
+      .reduce((sum, r) => {
+        const bloc = blocs.find(b => b.id === r.embotellat_bloc_id)
+        const ampolla = ampolles.find(a => a.id === bloc?.ampolla_id)
+        return sum + ((r.quantitat ?? 0) * (ampolla?.mida_cl ?? 0) / 100)
+      }, 0)
+  }
+
+  function ampollesPersona(persona: string): number {
+    return repartiments
+      .filter(r => r.persona === persona)
+      .reduce((s, r) => s + (r.quantitat ?? 0), 0)
+  }
 
   function addPersona() {
     const nom = prompt('Nom de la persona:')
     if (!nom) return
-    const noves = Array.from(disponiblePerAmpolla.keys()).map(ampollaId => ({
+    const noves = blocs.map(b => ({
       persona: nom,
-      ampolla_id: ampollaId,
+      embotellat_bloc_id: b.id,
       quantitat: 0,
     }))
     setRepartiments(r => [...r, ...noves])
@@ -77,22 +86,22 @@ function RepartimentLot({ fermentador, ampolles }: {
     setRepartiments(r => r.filter(x => x.persona !== persona))
   }
 
-  function updateQuantitat(persona: string, ampollaId: number, quantitat: number) {
+  function updateQuantitat(persona: string, blocId: number, quantitat: number) {
     setRepartiments(r => r.map(x =>
-      x.persona === persona && x.ampolla_id === ampollaId ? { ...x, quantitat } : x
+      x.persona === persona && x.embotellat_bloc_id === blocId ? { ...x, quantitat } : x
     ))
   }
 
   async function save() {
-    if (!embotellat?.id) return
+    if (!embotellat) return
     setSaving(true)
-    await supabase.from('repartiment').delete().eq('embotellat_id', embotellat.id)
+    const blocIds = blocs.map(b => b.id)
+    await supabase.from('repartiment').delete().in('embotellat_bloc_id', blocIds)
     const aInserir = repartiments
       .filter(r => (r.quantitat ?? 0) > 0)
       .map(r => ({
-        embotellat_id: embotellat.id,
+        embotellat_bloc_id: r.embotellat_bloc_id!,
         persona: r.persona!,
-        ampolla_id: r.ampolla_id!,
         quantitat: r.quantitat!,
       }))
     if (aInserir.length > 0) {
@@ -120,25 +129,22 @@ function RepartimentLot({ fermentador, ampolles }: {
         <button onClick={addPersona} style={S.btnAdd}>+ Afegir persona</button>
       </div>
 
-      {/* Resum de disponibilitat per tipus d'ampolla */}
       <div style={{ padding: '8px 12px', borderBottom: `0.5px solid ${colors.bg3}` }}>
         <div style={S.sectionHead}>Disponible per repartir</div>
-        {Array.from(disponiblePerAmpolla.entries()).map(([ampollaId, total]) => {
-          const ampolla = ampolles.find(a => a.id === ampollaId)
-          const repartit = repartitPerAmpolla(ampollaId)
-          const restant = total - repartit
+        {blocs.map(bloc => {
+          const repartit = repartitPerBloc(bloc.id)
+          const restant = bloc.quantitat - repartit
           return (
-            <div key={ampollaId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
-              <span style={{ color: colors.text2 }}>{ampolla?.nom ?? `Ampolla #${ampollaId}`}</span>
+            <div key={bloc.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
+              <span style={{ color: colors.text2 }}>{nomBloc(bloc, ampolles, taps, sucres)}</span>
               <span style={{ color: restant < 0 ? colors.amberHi : colors.teal, fontWeight: '500' }}>
-                {repartit} / {total} {restant !== 0 && `(${restant > 0 ? 'resten' : 'excés'} ${Math.abs(restant)})`}
+                {repartit} / {bloc.quantitat} {restant !== 0 && `(${restant > 0 ? 'resten' : 'excés'} ${Math.abs(restant)})`}
               </span>
             </div>
           )
         })}
       </div>
 
-      {/* Taula de persones x tipus ampolla */}
       {persones.length === 0 ? (
         <div style={{ padding: '20px', textAlign: 'center', fontSize: '11px', color: colors.text3 }}>
           Cap persona afegida. Clica &quot;+ Afegir persona&quot;
@@ -148,26 +154,27 @@ function RepartimentLot({ fermentador, ampolles }: {
           {persones.map(persona => (
             <div key={persona} style={{ marginBottom: '12px', borderBottom: `0.5px solid ${colors.bg3}`, paddingBottom: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-    <span style={{ fontSize: '12px', color: colors.textHi, fontWeight: '500' }}>{persona}</span>
-    <span style={{ fontSize: '10px', color: colors.teal }}>{litresPersona(persona).toFixed(2)} l</span>
-  </div>
-  <button onClick={() => removePersona(persona)} style={{ ...S.btnDel, fontSize: '11px' }}>eliminar</button>
-</div>
-              {Array.from(disponiblePerAmpolla.keys()).map(ampollaId => {
-                const ampolla = ampolles.find(a => a.id === ampollaId)
-                const valor = repartiments.find(r => r.persona === persona && r.ampolla_id === ampollaId)?.quantitat ?? 0
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                  <span style={{ fontSize: '12px', color: colors.textHi, fontWeight: '500' }}>{persona}</span>
+                  <span style={{ fontSize: '10px', color: colors.teal }}>
+                    {ampollesPersona(persona)} amp · {litresPersona(persona).toFixed(2)} l
+                  </span>
+                </div>
+                <button onClick={() => removePersona(persona)} style={{ ...S.btnDel, fontSize: '11px' }}>eliminar</button>
+              </div>
+              {blocs.map(bloc => {
+                const valor = repartiments.find(r => r.persona === persona && r.embotellat_bloc_id === bloc.id)?.quantitat ?? 0
                 return (
-                  <div key={ampollaId} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '10px', color: colors.text3, width: '120px', flexShrink: 0 }}>
-                      {ampolla?.nom ?? `#${ampollaId}`}
+                  <div key={bloc.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '10px', color: colors.text3, width: '160px', flexShrink: 0 }}>
+                      {nomBloc(bloc, ampolles, taps, sucres)}
                     </span>
                     <input
                       type="number"
                       min="0"
                       value={valor || ''}
                       placeholder="0"
-                      onChange={e => updateQuantitat(persona, ampollaId, parseInt(e.target.value) || 0)}
+                      onChange={e => updateQuantitat(persona, bloc.id, parseInt(e.target.value) || 0)}
                       style={{ ...S.fieldInput, width: '60px', flex: 'none' }}
                     />
                   </div>
@@ -188,15 +195,15 @@ function RepartimentLot({ fermentador, ampolles }: {
 }
 
 export default function FaseRepartiment({ data, compact }: Props) {
-  const router = useRouter()
-
   if (compact) return (
     <div>
       {data.fermentadors.length === 0 && (
         <div style={{ fontSize: '10px', color: colors.text3, padding: '8px 12px' }}>Cap repartiment</div>
       )}
       {data.fermentadors.map(f => {
-        const totalRepartit = (f.embotellat?.[0]?.repartiment ?? []).reduce((s, r) => s + r.quantitat, 0)
+        const totalRepartit = (f.embotellat?.[0]?.embotellat_bloc ?? [])
+          .flatMap(b => b.repartiment ?? [])
+          .reduce((s, r) => s + r.quantitat, 0)
         return (
           <CardCompact
             key={f.id}
@@ -226,7 +233,7 @@ export default function FaseRepartiment({ data, compact }: Props) {
       )}
       {data.fermentadors.map(f => (
         <div key={f.id} style={{ marginBottom: '16px' }}>
-          <RepartimentLot fermentador={f} ampolles={data.tipusAmpolles} />
+          <RepartimentLot fermentador={f} ampolles={data.tipusAmpolles} taps={data.tipusTaps} sucres={data.tipusSucres} />
         </div>
       ))}
     </div>
