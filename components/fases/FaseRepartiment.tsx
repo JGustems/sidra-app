@@ -31,7 +31,8 @@ function nomBloc(bloc: EmbotellAtBloc, ampolles: TipusAmpolla[], taps: TipusTap[
   const ampolla = ampolles.find(a => a.id === bloc.ampolla_id)
   const tap = taps.find(t => t.id === bloc.tap_id)
   const sucre = sucres.find(s => s.id === bloc.sucre_id)
-  return `${ampolla?.nom ?? '?'} · ${tap?.nom ?? '?'} · ${sucre?.nom ?? '?'}`
+  const rang = `${String(bloc.num_inici).padStart(3, '0')}→${String(bloc.num_final).padStart(3, '0')}`
+  return `${ampolla?.nom ?? '?'} · ${tap?.nom ?? '?'} · ${sucre?.nom ?? '?'} (${rang})`
 }
 
 function RepartimentLot({ fermentador, ampolles, taps, sucres }: {
