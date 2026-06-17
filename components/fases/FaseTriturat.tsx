@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Triturada, TritaradaOrigen, Poma } from '@/lib/types'
 import { S, colors } from '@/lib/theme'
+import { deleteAmbAvis } from '@/lib/supabase'
+
 import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
 
 type TritaradaAmbOrigen = Triturada & { triturada_origen: TritaradaOrigen[] }
@@ -162,10 +164,14 @@ export default function FaseTriturat({ data, compact }: Props) {
   }
 
   async function deleteTriturada(idx: number) {
-    const t = triturades[idx]
-    if (t.id) { await supabase.from('triturada').delete().eq('id', t.id); router.refresh() }
-    setTriturades(tr => tr.filter((_, i) => i !== idx))
+  const t = triturades[idx]
+  if (t.id) {
+    const ok = await deleteAmbAvis('triturada', t.id, 'Aquesta triturada ja s\'ha usat en una premsa i no es pot eliminar.')
+    if (!ok) return
+    router.refresh()
   }
+  setTriturades(tr => tr.filter((_, i) => i !== idx))
+}
 
   if (compact) return (
     <div>
