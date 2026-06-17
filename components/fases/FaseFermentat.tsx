@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Fermentador, FermentadorOrigen, Ebullidor, SucDirecte } from '@/lib/types'
 import { S, colors } from '@/lib/theme'
+import { deleteAmbAvis } from '@/lib/supabase'
 import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
 
 type FermentadorAmbOrigen = Fermentador & { fermentador_origen: FermentadorOrigen[] }
@@ -252,10 +253,14 @@ export default function FaseFermentat({ data, compact }: Props) {
   }
 
   async function deleteFermentador(idx: number) {
-    const f = fermentadors[idx]
-    if (f.id) { await supabase.from('fermentador').delete().eq('id', f.id); router.refresh() }
-    setFermentadors(fe => fe.filter((_, i) => i !== idx))
+  const f = fermentadors[idx]
+  if (f.id) {
+    const ok = await deleteAmbAvis('fermentador', f.id, 'Aquest fermentador ja s\'ha embotellat i no es pot eliminar.')
+    if (!ok) return
+    router.refresh()
   }
+  setFermentadors(fe => fe.filter((_, i) => i !== idx))
+}
 
   if (compact) return (
     <div>
