@@ -56,11 +56,11 @@ function ColHeader({ label, state }: { label: string; state: 'prev2' | 'prev1' |
 }
 
 export default function FaseCarousel({ data }: { data: unknown }) {
-  const [current, canviarFase] = useState(0)
+  const [current, setCurrent] = useState(0)
   const { intentarCanviar } = useEditContext()
 
   function canviarFase(idx: number) {
-    intentarCanviar(() => canviarFase(idx))
+    intentarCanviar(() => setCurrent(idx))
   }
 
   const positions = [-2, -1, 0, 1, 2]
