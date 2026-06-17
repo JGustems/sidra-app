@@ -303,16 +303,30 @@ export default function FaseBullit({ data, compact }: Props) {
   }
 
   async function deleteEbullidor(idx: number) {
-    const e = ebullidors[idx]
-    if (e.id) { await supabase.from('ebullidor').delete().eq('id', e.id); router.refresh() }
-    setEbullidors(eb => eb.filter((_, i) => i !== idx))
+  const e = ebullidors[idx]
+  if (e.id) {
+    const { error } = await supabase.from('ebullidor').delete().eq('id', e.id)
+    if (error) {
+      alert('No es pot eliminar aquest ebullidor perquè ja s\'ha usat en un fermentador. Elimina primer la referència al fermentador.')
+      return
+    }
+    router.refresh()
   }
+  setEbullidors(eb => eb.filter((_, i) => i !== idx))
+}
 
   async function deleteSucDirecte(idx: number) {
-    const s = sucsDirectes[idx]
-    if (s.id) { await supabase.from('suc_directe').delete().eq('id', s.id); router.refresh() }
-    setSucsDirectes(sd => sd.filter((_, i) => i !== idx))
+  const s = sucsDirectes[idx]
+  if (s.id) {
+    const { error } = await supabase.from('suc_directe').delete().eq('id', s.id)
+    if (error) {
+      alert('No es pot eliminar aquest suc directe perquè ja s\'ha usat en un fermentador. Elimina primer la referència al fermentador.')
+      return
+    }
+    router.refresh()
   }
+  setSucsDirectes(sd => sd.filter((_, i) => i !== idx))
+}
 
   if (compact) return (
     <div>
