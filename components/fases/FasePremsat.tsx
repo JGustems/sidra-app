@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Premsa, PremsaOrigen, Triturada } from '@/lib/types'
 import { S, colors } from '@/lib/theme'
+import { deleteAmbAvis } from '@/lib/supabase'
+
 import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
 
 type PremsaAmbOrigen = Premsa & { premsa_origen: PremsaOrigen[] }
@@ -181,11 +183,15 @@ export default function FasePremsat({ data, compact }: Props) {
     router.refresh()
   }
 
-  async function deletePremsa(idx: number) {
-    const p = premses[idx]
-    if (p.id) { await supabase.from('premsa').delete().eq('id', p.id); router.refresh() }
-    setPremses(pr => pr.filter((_, i) => i !== idx))
+ async function deletePremsa(idx: number) {
+  const p = premses[idx]
+  if (p.id) {
+    const ok = await deleteAmbAvis('premsa', p.id, 'Aquesta premsa ja s\'ha usat en un ebullidor o suc directe i no es pot eliminar.')
+    if (!ok) return
+    router.refresh()
   }
+  setPremses(pr => pr.filter((_, i) => i !== idx))
+}
 
   if (compact) return (
     <div>
