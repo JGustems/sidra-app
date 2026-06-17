@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Ebullidor, EbullidorOrigen, SucDirecte, SucDirecteOrigen, Premsa } from '@/lib/types'
 import { S, colors } from '@/lib/theme'
+import { deleteAmbAvis } from '@/lib/supabase'
 import Card, { CardHead, CardFootRead, CardFootEdit, FieldRead, FieldInput, FieldAuto, Balance, CardCompact } from '@/components/ui/Card'
 
 type EbullidorAmbOrigen = Ebullidor & { ebullidor_origen: EbullidorOrigen[] }
@@ -305,11 +306,8 @@ export default function FaseBullit({ data, compact }: Props) {
   async function deleteEbullidor(idx: number) {
   const e = ebullidors[idx]
   if (e.id) {
-    const { error } = await supabase.from('ebullidor').delete().eq('id', e.id)
-    if (error) {
-      alert('No es pot eliminar aquest ebullidor perquè ja s\'ha usat en un fermentador. Elimina primer la referència al fermentador.')
-      return
-    }
+    const ok = await deleteAmbAvis('ebullidor', e.id, 'Aquest ebullidor ja s\'ha usat en un fermentador i no es pot eliminar.')
+    if (!ok) return
     router.refresh()
   }
   setEbullidors(eb => eb.filter((_, i) => i !== idx))
@@ -318,11 +316,8 @@ export default function FaseBullit({ data, compact }: Props) {
   async function deleteSucDirecte(idx: number) {
   const s = sucsDirectes[idx]
   if (s.id) {
-    const { error } = await supabase.from('suc_directe').delete().eq('id', s.id)
-    if (error) {
-      alert('No es pot eliminar aquest suc directe perquè ja s\'ha usat en un fermentador. Elimina primer la referència al fermentador.')
-      return
-    }
+    const ok = await deleteAmbAvis('suc_directe', s.id, 'Aquest suc directe ja s\'ha usat en un fermentador i no es pot eliminar.')
+    if (!ok) return
     router.refresh()
   }
   setSucsDirectes(sd => sd.filter((_, i) => i !== idx))
