@@ -7,6 +7,7 @@ import FasePremsat from '@/components/fases/FasePremsat'
 import FaseBullit from '@/components/fases/FaseBullit'
 import FaseFermentat from '@/components/fases/FaseFermentat'
 import FaseEmbotellat from '@/components/fases/FaseEmbotellat'
+import FaseRepartiment from '@/components/fases/FaseRepartiment'
 
 const FASES = [
   { id: 'pomes',      label: 'Pomes',      curt: 'P'  },
@@ -15,6 +16,8 @@ const FASES = [
   { id: 'bullit',     label: 'Bullit',     curt: 'B'  },
   { id: 'fermentat',  label: 'Fermentat',  curt: 'F'  },
   { id: 'embotellat', label: 'Embotellat', curt: 'E'  },
+  { id: 'repartiment', label: 'Repartiment', curt: 'R' },
+
 ]
 
 function FaseContent({ faseId, data, compact }: { faseId: string; data: unknown; compact?: boolean }) {
@@ -25,6 +28,7 @@ function FaseContent({ faseId, data, compact }: { faseId: string; data: unknown;
   if (faseId === 'bullit')     return <FaseBullit     data={d as Parameters<typeof FaseBullit>[0]['data']}     compact={compact} />
   if (faseId === 'fermentat')  return <FaseFermentat  data={d as Parameters<typeof FaseFermentat>[0]['data']}  compact={compact} />
   if (faseId === 'embotellat') return <FaseEmbotellat data={d as Parameters<typeof FaseEmbotellat>[0]['data']} compact={compact} />
+  if (faseId === 'repartiment') return <FaseRepartiment data={d as Parameters<typeof FaseRepartiment>[0]['data']} compact={compact} />
   return null
 }
 
