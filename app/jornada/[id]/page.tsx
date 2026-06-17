@@ -44,7 +44,7 @@ export default async function JornadaPage({
     supabase.from('premsa').select('*, premsa_origen(*)').eq('jornada_id', jornada.id).order('codi'),
     supabase.from('ebullidor').select('*, ebullidor_origen(*)').eq('jornada_id', jornada.id).order('codi'),
     supabase.from('suc_directe').select('*, suc_directe_origen(*)').eq('jornada_id', jornada.id).order('codi'),
-    supabase.from('fermentador').select('*, fermentador_origen(*), embotellat(*, embotellat_bloc(*), repartiment(*))').eq('jornada_id', jornada.id).order('lot'),
+    supabase.from('fermentador').select('*, fermentador_origen(*), embotellat(*, embotellat_bloc(*, repartiment(*)))').eq('jornada_id', jornada.id).order('lot'),
     supabase.from('tipus_ampolla').select('*').order('ordre'),
     supabase.from('tipus_tap').select('*').order('ordre'),
     supabase.from('tipus_sucre').select('*').order('ordre'),
