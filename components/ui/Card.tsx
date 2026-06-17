@@ -1,7 +1,8 @@
 'use client'
 
 import { colors, S } from '@/lib/theme'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useId } from 'react'
+import { useEditContext } from '@/lib/EditContext'
 
 // ============================================================
 // CARD — component global per a totes les fitxes de producció
@@ -301,6 +302,18 @@ export default function Card({ children, editing, accentLeft }: {
   editing?: boolean
   accentLeft?: 'teal' | 'amber'
 }) {
+  const id = useId()
+  const { registrarEdicio, desregistrarEdicio } = useEditContext()
+
+  useEffect(() => {
+    if (editing) {
+      registrarEdicio(id)
+    } else {
+      desregistrarEdicio(id)
+    }
+    return () => desregistrarEdicio(id)
+  }, [editing, id, registrarEdicio, desregistrarEdicio])
+
   return (
     <div style={{
       ...(editing ? S.cardEditing : S.card),
