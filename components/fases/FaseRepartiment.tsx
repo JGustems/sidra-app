@@ -53,6 +53,14 @@ function RepartimentLot({ fermentador, ampolles }: {
 
   // Persones úniques
   const persones = Array.from(new Set(repartiments.map(r => r.persona).filter(Boolean))) as string[]
+  function litresPersona(persona: string): number {
+  return repartiments
+    .filter(r => r.persona === persona)
+    .reduce((sum, r) => {
+      const ampolla = ampolles.find(a => a.id === r.ampolla_id)
+      return sum + ((r.quantitat ?? 0) * (ampolla?.mida_cl ?? 0) / 100)
+    }, 0)
+}
 
   function addPersona() {
     const nom = prompt('Nom de la persona:')
@@ -140,9 +148,12 @@ function RepartimentLot({ fermentador, ampolles }: {
           {persones.map(persona => (
             <div key={persona} style={{ marginBottom: '12px', borderBottom: `0.5px solid ${colors.bg3}`, paddingBottom: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ fontSize: '12px', color: colors.textHi, fontWeight: '500' }}>{persona}</span>
-                <button onClick={() => removePersona(persona)} style={{ ...S.btnDel, fontSize: '11px' }}>eliminar</button>
-              </div>
+  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+    <span style={{ fontSize: '12px', color: colors.textHi, fontWeight: '500' }}>{persona}</span>
+    <span style={{ fontSize: '10px', color: colors.teal }}>{litresPersona(persona).toFixed(2)} l</span>
+  </div>
+  <button onClick={() => removePersona(persona)} style={{ ...S.btnDel, fontSize: '11px' }}>eliminar</button>
+</div>
               {Array.from(disponiblePerAmpolla.keys()).map(ampollaId => {
                 const ampolla = ampolles.find(a => a.id === ampollaId)
                 const valor = repartiments.find(r => r.persona === persona && r.ampolla_id === ampollaId)?.quantitat ?? 0
