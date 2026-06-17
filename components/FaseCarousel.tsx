@@ -8,6 +8,7 @@ import FaseBullit from '@/components/fases/FaseBullit'
 import FaseFermentat from '@/components/fases/FaseFermentat'
 import FaseEmbotellat from '@/components/fases/FaseEmbotellat'
 import FaseRepartiment from '@/components/fases/FaseRepartiment'
+import { useEditContext } from '@/lib/EditContext'
 
 const FASES = [
   { id: 'pomes',      label: 'Pomes',      curt: 'P'  },
@@ -55,7 +56,12 @@ function ColHeader({ label, state }: { label: string; state: 'prev2' | 'prev1' |
 }
 
 export default function FaseCarousel({ data }: { data: unknown }) {
-  const [current, setCurrent] = useState(0)
+  const [current, canviarFase] = useState(0)
+  const { intentarCanviar } = useEditContext()
+
+  function canviarFase(idx: number) {
+    intentarCanviar(() => canviarFase(idx))
+  }
 
   const positions = [-2, -1, 0, 1, 2]
   const states = ['prev2', 'prev1', 'active', 'next1', 'next2'] as const
@@ -78,7 +84,7 @@ export default function FaseCarousel({ data }: { data: unknown }) {
             <div
               key={i}
               style={{ width: `${width}px`, flexShrink: 0, opacity: hasContent ? opacity : 0, transition: 'opacity 0.3s', cursor: hasContent && !isActive ? 'pointer' : 'default' }}
-              onClick={hasContent && !isActive ? () => setCurrent(idx) : undefined}
+              onClick={hasContent && !isActive ? () => canviarFase(idx) : undefined}
             >
               {hasContent && (
                 <>
@@ -97,7 +103,7 @@ export default function FaseCarousel({ data }: { data: unknown }) {
         marginTop: '24px', paddingTop: '16px', borderTop: '0.5px solid #252422',
       }}>
         <button
-          onClick={() => setCurrent(c => Math.max(0, c - 1))}
+          onClick={() => canviarFase(c => Math.max(0, c - 1))}
           disabled={current === 0}
           style={{
             fontFamily: 'DM Mono, monospace', fontSize: '11px', padding: '5px 14px',
@@ -112,7 +118,7 @@ export default function FaseCarousel({ data }: { data: unknown }) {
           {FASES.map((f, i) => (
             <button
               key={i}
-              onClick={() => setCurrent(i)}
+              onClick={() => canviarFase(i)}
               title={f.label}
               style={{
                 width: i === current ? '16px' : '6px', height: '6px',
@@ -125,7 +131,7 @@ export default function FaseCarousel({ data }: { data: unknown }) {
         </div>
 
         <button
-          onClick={() => setCurrent(c => Math.min(FASES.length - 1, c + 1))}
+          onClick={() => canviarFase(c => Math.min(FASES.length - 1, c + 1))}
           disabled={current === FASES.length - 1}
           style={{
             fontFamily: 'DM Mono, monospace', fontSize: '11px', padding: '5px 14px',
